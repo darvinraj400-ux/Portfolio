@@ -40,19 +40,11 @@ export function scrollToId(id: string): void {
   const el = document.getElementById(target);
   if (!el) return;
 
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   const lenis = getLenisInstance();
-  if (lenis && !reduceMotion) {
+  if (lenis) {
     lenis.scrollTo(el, { offset: NAV_OFFSET });
     return;
   }
 
-  if (reduceMotion) {
-    el.scrollIntoView({ behavior: "auto", block: "start" });
-  } else {
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
 }

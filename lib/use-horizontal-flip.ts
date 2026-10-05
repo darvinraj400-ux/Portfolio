@@ -28,9 +28,8 @@ export function isFlipPinActive(): boolean {
  * entry point, only the trigger differs. Leaving the pin forward
  * returns to neutral; gap zones hold the last palette by design.
  *
- * Mobile (<1024px) and `prefers-reduced-motion` render the normal
- * vertical stack: no trigger is created and all cards stay centered
- * (details visible via CSS default). The horizontal layout itself is
+ * Mobile (<1024px) renders the normal vertical stack: no trigger is
+ * created and all cards stay centered (details visible via CSS default). The horizontal layout itself is
  * gated on `html.js-flip` (set here on setup), so no-JS and GSAP-load
  * failure also fall back to the stack.
  *
@@ -52,8 +51,7 @@ export function useHorizontalFlip(
     if (!pin || !track) return;
 
     const mqDesktop = window.matchMedia("(min-width: 1024px)");
-    const mqMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const flipActive = () => mqDesktop.matches && !mqMotion.matches;
+    const flipActive = () => mqDesktop.matches;
 
     let cancelled = false;
     // Generation guards the setup/teardown race: only the latest
@@ -251,12 +249,10 @@ export function useHorizontalFlip(
       setAllCentered(true);
     }
     mqDesktop.addEventListener("change", onMediaChange);
-    mqMotion.addEventListener("change", onMediaChange);
 
     return () => {
       cancelled = true;
       mqDesktop.removeEventListener("change", onMediaChange);
-      mqMotion.removeEventListener("change", onMediaChange);
       teardown();
     };
   }, [pinRef, trackRef, selector]);

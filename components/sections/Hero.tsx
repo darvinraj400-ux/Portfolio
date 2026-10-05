@@ -20,9 +20,8 @@ const SUBLINE = "Just a dev who ships.";
  *
  * SSR (and the first client render) output the full positioning string as
  * plain text, so SEO, screen readers, and no-JS clients see it complete.
- * After mount — unless `prefers-reduced-motion` is set — the string is
- * split into per-character spans that fade/slide in with a stagger.
- * Runs once on mount, never repeats.
+ * After mount the string is split into per-character spans that fade/slide
+ * in with a stagger. Runs once on mount, never repeats.
  */
 export default function Hero() {
   const [animate, setAnimate] = useState(false);
@@ -35,7 +34,6 @@ export default function Hero() {
   const chars = Array.from(text);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     setAnimate(true);
     // Gate parallax until ALL mount motion is done: the h1 decode
     // ((chars-1) stagger steps + one char duration) and the subline
@@ -52,11 +50,9 @@ export default function Hero() {
 
   // Parallax drift: headline/subline lag behind the scroll as the hero
   // exits. Gated on decode completion so mid-decode scrolling never
-  // fights the character animation; reduced-motion and mobile-lean
-  // offsets handled inside.
+  // fights the character animation; mobile-lean offsets handled inside.
   useEffect(() => {
     if (!animate || !decodeComplete) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const section = sectionRef.current;
     const headline = headlineRef.current;
     const subline = sublineRef.current;

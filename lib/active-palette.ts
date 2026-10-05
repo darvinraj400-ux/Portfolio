@@ -81,7 +81,6 @@ let tween: { kill: () => void } | null = null;
  * Animates the page tokens toward `key` over ~1.2s (power2.inOut).
  * Same-key calls no-op; retriggers kill the in-flight tween so rapid
  * scrolling never queues animations. Unknown keys fall back to neutral.
- * `prefers-reduced-motion` sets tokens instantly with no tween.
  *
  * Layer 4's horizontal Flip will call this same function — only the
  * triggers change, never this mechanism.
@@ -94,10 +93,6 @@ export function setActivePalette(
   const target = resolveKey(key);
   if (target === currentKey) return;
 
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   const applyInstant = () => {
     tween?.kill();
     tween = null;
@@ -107,11 +102,6 @@ export function setActivePalette(
     writeTokens(current);
     writeIntensity(currentIntensity);
   };
-
-  if (reduceMotion) {
-    applyInstant();
-    return;
-  }
 
   const duration = opts?.duration ?? 1.2;
   const from = clone(current);

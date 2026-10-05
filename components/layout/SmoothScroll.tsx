@@ -6,13 +6,10 @@ import { setLenisInstance, type LenisLike } from "@/lib/scroll";
 
 /**
  * Initializes Lenis smooth scrolling on mount, tears down on unmount.
- * Respects `prefers-reduced-motion` — if set, Lenis is not initialized.
  * Returns children only.
  */
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
     let raf = 0;
     let lenis: LenisLike | null = null;
     let cancelled = false;

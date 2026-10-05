@@ -14,11 +14,9 @@ type RevealOptions = {
  * descendants matching `[data-reveal]` fade in (`opacity 0 → 1`) and rise
  * (`y 16 → 0`) over 600ms with an 80ms stagger, `power2.out`, once ever.
  *
- * Initial hidden state is applied via `gsap.set` inside the effect only —
- * never in CSS — so content is fully visible with JS disabled or when
- * `prefers-reduced-motion` is set (in which case no ScrollTrigger is
- * initialized at all).
- */
+  * Initial hidden state is applied via `gsap.set` inside the effect only —
+  * never in CSS — so content is fully visible with JS disabled.
+  */
 export function useSectionReveal(
   ref: RefObject<HTMLElement | null>,
   options?: RevealOptions,
@@ -27,7 +25,6 @@ export function useSectionReveal(
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = ref.current;
     if (!root) return;
 

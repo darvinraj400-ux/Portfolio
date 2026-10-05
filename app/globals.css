@@ -185,9 +185,9 @@
     --color-foreground: var(--foreground);
   }
 
-  /* Horizontal Flip: card details are visible by default (mobile,
-     reduced-motion, and no-JS all show details). The collapsing rule
-     below only applies inside the JS-driven desktop stage. */
+  /* Horizontal Flip: card details are visible by default (mobile and
+     no-JS all show details). The collapsing rule below only applies
+     inside the JS-driven desktop stage. */
   .card-detail {
     opacity: 1;
     visibility: visible;
@@ -203,18 +203,7 @@
 }
 }
 
-/* Reduced motion: Magic UI shimmer loops are purely decorative, so
-   kill them. UNLAYERED to win over the animate-* utilities. */
-@media (prefers-reduced-motion: reduce) {
-  .animate-shimmer-slide,
-  .animate-spin-around {
-    animation: none;
-  }
-}
-
-/* Warm lamp glow breathing. CSS-driven (the no-CSS-animation rule
-   covers the rain itself); disabled under reduced motion where the
-   glow is not rendered at all. */
+/* Warm lamp glow breathing. CSS-driven. */
 @keyframes lamp-breathe {
   0%,
   100% {
@@ -233,7 +222,7 @@
    and gated on html.js-flip (set by use-horizontal-flip on setup) so
    no-JS and GSAP-load failure keep the vertical stack instead of a
    cropped, unreachable row. */
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) {
   html.js-flip .flip-stage {
     height: 100vh;
     display: flex;
@@ -318,16 +307,4 @@
 .marquee:hover .marquee-track,
 .marquee:focus-within .marquee-track {
   animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track,
-  .marquee-track[data-direction="right"] {
-    animation: none;
-    transform: none;
-  }
-  .marquee {
-    overflow-x: auto;
-    mask-image: none;
-  }
 }

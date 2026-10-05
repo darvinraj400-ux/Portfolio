@@ -19,17 +19,11 @@ import { isFlipPinActive } from "./use-horizontal-flip";
  * Band policy (also for Layer 4): bands must not overlap — when several
  * triggers are active at once, last-toggle-wins. Gaps between bands
  * (e.g. between Product cards) keep the last palette by design; the
- * shift is continuous, not a blend.
- *
- * Reduced-motion: no triggers; neutral is set once on mount.
- */
+  * shift is continuous, not a blend.
+  */
 export function usePaletteScroll(): void {
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setActivePalette("neutral");
-      return;
-    }
 
     let cancelled = false;
     let cleanup: (() => void) | null = null;
@@ -49,8 +43,8 @@ export function usePaletteScroll(): void {
         // While the Products Flip owns the pin, the card wrappers'
         // vertical bands are stale (their document positions no longer
         // track the viewport), so their toggles yield to the Flip's
-        // center detection. Outside the pin — approach, mobile stack,
-        // reduced motion — they drive normally.
+        // center detection. Outside the pin — approach, mobile stack —
+        // they drive normally.
         const flipOwns = (el: HTMLElement): boolean =>
           !!el.closest("#products") && isFlipPinActive();
 

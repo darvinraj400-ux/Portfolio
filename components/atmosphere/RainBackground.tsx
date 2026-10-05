@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type Drop = {
   x: number;
@@ -106,20 +106,8 @@ export function getRainStats(): RainStats {
 export default function RainBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lightningRef = useRef<HTMLDivElement>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // Initial false matches SSR so hydration agrees; the swap happens
-    // before anything visible paints (the canvas starts transparent).
-    setReducedMotion(query.matches);
-    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -355,25 +343,7 @@ export default function RainBackground() {
       window.visualViewport?.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [reducedMotion]);
-
-  if (reducedMotion) {
-    return (
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-0 print:hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0c] to-[#14131a]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
-          }}
-        />
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div
