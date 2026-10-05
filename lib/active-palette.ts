@@ -6,6 +6,7 @@ type PaletteState = {
   bg: RGB;
   fg: RGB;
   accent: RGB;
+  accentForeground: RGB;
   border: RGB;
   muted: RGB;
   mutedForeground: RGB;
@@ -15,6 +16,7 @@ const TOKEN_VARS = {
   bg: "--background-rgb",
   fg: "--foreground-rgb",
   accent: "--accent-rgb",
+  accentForeground: "--accent-foreground-rgb",
   border: "--border-rgb",
   muted: "--muted-rgb",
   mutedForeground: "--muted-foreground-rgb",
@@ -30,6 +32,7 @@ function clone(p: Palette): PaletteState {
     bg: [...p.bg],
     fg: [...p.fg],
     accent: [...p.accent],
+    accentForeground: [...p.accentForeground],
     border: [...p.border],
     muted: [...p.muted],
     mutedForeground: [...p.mutedForeground],
@@ -124,6 +127,9 @@ export function setActivePalette(
         ac0: from.accent[0],
         ac1: from.accent[1],
         ac2: from.accent[2],
+        af0: from.accentForeground[0],
+        af1: from.accentForeground[1],
+        af2: from.accentForeground[2],
         bo0: from.border[0],
         bo1: from.border[1],
         bo2: from.border[2],
@@ -138,6 +144,7 @@ export function setActivePalette(
         bg: rgb(proxy.bg0, proxy.bg1, proxy.bg2),
         fg: rgb(proxy.fg0, proxy.fg1, proxy.fg2),
         accent: rgb(proxy.ac0, proxy.ac1, proxy.ac2),
+        accentForeground: rgb(proxy.af0, proxy.af1, proxy.af2),
         border: rgb(proxy.bo0, proxy.bo1, proxy.bo2),
         muted: rgb(proxy.mu0, proxy.mu1, proxy.mu2),
         mutedForeground: rgb(proxy.mf0, proxy.mf1, proxy.mf2),
@@ -152,6 +159,9 @@ export function setActivePalette(
         ac0: to.accent[0],
         ac1: to.accent[1],
         ac2: to.accent[2],
+        af0: to.accentForeground[0],
+        af1: to.accentForeground[1],
+        af2: to.accentForeground[2],
         bo0: to.border[0],
         bo1: to.border[1],
         bo2: to.border[2],

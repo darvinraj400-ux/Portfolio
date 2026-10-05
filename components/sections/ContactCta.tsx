@@ -21,7 +21,7 @@ export default function ContactCta() {
       shimmerColor="rgba(255, 255, 255, 0.4)"
       shimmerDuration="3s"
       borderRadius="0.75rem"
-      className="text-base font-medium text-[var(--background)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
+      className="text-base font-medium text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
       onClick={() => {
         window.location.href = mailto;
       }}
