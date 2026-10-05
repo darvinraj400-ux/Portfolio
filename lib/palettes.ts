@@ -55,6 +55,6 @@ export const PALETTES: Record<PaletteKey, Palette> = {
     fg: [28, 25, 23],
     accent: [180, 83, 9],
     border: [231, 222, 209],
-    muted: [120, 113, 108],
+    muted: [102, 96, 91],
   },
 };
