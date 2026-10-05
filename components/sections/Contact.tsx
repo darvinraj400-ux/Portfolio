@@ -17,7 +17,7 @@ export default function Contact() {
           Available for full-stack and AI integration work.
         </p>
         <p data-reveal className="text-base text-muted-foreground">
-          Based in Kuala Lumpur. Open to remote.
+          Available for remote work.
         </p>
         <div data-reveal className="mt-8">
           <ContactCta />

@@ -89,7 +89,7 @@ export default function Nav() {
           onClick={handleNavClick("#top")}
           className="text-sm font-semibold tracking-tight text-foreground"
         >
-          {SITE.name}
+          {SITE.handle}
         </Link>
         <ul className="flex items-center gap-6">
           {NAV_LINKS.map((link) => {

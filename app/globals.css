@@ -273,3 +273,61 @@
     translate: 0 0;
   }
 }
+
+/* Skills marquee: UNLAYERED so it wins over Tailwind utilities. Each
+   track holds two identical halves; translating -50% loops seamlessly. */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 45s linear infinite;
+}
+
+.marquee-track[data-direction="right"] {
+  animation-name: marquee-right;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .marquee-track[data-direction="right"] {
+    animation: none;
+    transform: none;
+  }
+  .marquee {
+    overflow-x: auto;
+    mask-image: none;
+  }
+}

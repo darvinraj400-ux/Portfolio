@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Darvin Raj — I build AI that knows its limits",
     description:
-      "Full-stack engineer based in Kuala Lumpur. AI that recommends, guardrails that enforce, humans that approve.",
+      "Full-stack engineer. AI recommends, guardrails enforce, humans approve.",
     type: "website",
     url: "/",
     siteName: "Darvin Raj",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Darvin Raj — I build AI that knows its limits",
     description:
-      "Full-stack engineer based in Kuala Lumpur. AI that recommends, guardrails that enforce, humans that approve.",
+      "Full-stack engineer. AI recommends, guardrails enforce, humans approve.",
   },
 };
 

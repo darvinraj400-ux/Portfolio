@@ -8,6 +8,27 @@ export default function About() {
         <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
           About
         </h2>
+        <div data-reveal className="mt-8 flex flex-wrap items-center gap-6">
+          <span className="font-serif text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            Darvin Raj
+          </span>
+          <svg
+            width="100"
+            height="40"
+            viewBox="0 0 100 40"
+            fill="none"
+            aria-hidden="true"
+            className="shrink-0"
+          >
+            <path
+              d="M2 26 C 14 26, 18 10, 30 12 S 44 30, 56 22 S 70 6, 82 14 S 94 26, 98 20"
+              stroke="var(--accent)"
+              strokeOpacity="0.4"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
         <div className="mt-8 max-w-2xl space-y-6 text-lg leading-relaxed text-foreground">
           <p data-reveal>
             I&apos;m Darvin, and I build AI products that admit what they
@@ -23,9 +44,10 @@ export default function About() {
             scheduler.
           </p>
           <p data-reveal>
-            I&apos;m based in Kuala Lumpur and finishing my final year. When
-            I&apos;m not shipping, I&apos;m usually breaking my own demos on
-            purpose to find out where the guardrails should go.
+            I&apos;m finishing my final year of my Diploma in Information
+            Technology at Politeknik Muadzam Shah. When I&apos;m not
+            shipping, I&apos;m usually breaking my own demos on purpose to
+            find out where the guardrails should go.
           </p>
         </div>
         <AboutStats />

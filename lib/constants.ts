@@ -1,5 +1,6 @@
 export const SITE = {
   name: "Darvin Raj",
+  handle: "darvinn",
   domain: "https://darvinn.xyz",
   positioning: "I build AI that knows its limits.",
   email: "darvinraj400@gmail.com",
