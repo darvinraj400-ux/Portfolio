@@ -25,7 +25,7 @@ const SKILL_GROUPS = [
 
 export default function Skills() {
   return (
-    <section id="skills" aria-label="Skills" className="scroll-mt-14 px-6 py-24 sm:py-32">
+    <section id="skills" aria-label="Skills" data-palette="neutral" className="scroll-mt-14 px-6 py-24 sm:py-32">
       <Reveal className="mx-auto w-full max-w-5xl">
         <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
           Skills

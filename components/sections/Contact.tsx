@@ -4,7 +4,7 @@ import { SITE } from "@/lib/constants";
 
 export default function Contact() {
   return (
-    <section id="contact" aria-label="Contact" className="scroll-mt-14 px-6 py-24 sm:py-32">
+    <section id="contact" aria-label="Contact" data-palette="neutral" className="scroll-mt-14 px-6 py-24 sm:py-32">
       <Reveal className="mx-auto w-full max-w-5xl">
         <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
           Contact

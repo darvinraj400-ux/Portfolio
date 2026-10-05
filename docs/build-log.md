@@ -2,6 +2,31 @@
 
 Reverse-chronological.
 
+## 2026-10-05 — Layer 3: ambient palette shift
+
+- Palette tokens refactored to RGB triplets (`--background-rgb` etc. +
+  `rgb(var())` aliases) so GSAP can interpolate them numerically.
+- lib/palettes.ts: five palettes as triplets. fadeandco is LIGHT
+  (cream base); the others are dark. The shift inverts the page.
+- setActivePalette(): single entry point. Kills in-flight tween on
+  retrigger, no-ops when the target is already active, respects
+  prefers-reduced-motion by setting tokens instantly. Unknown keys
+  fall back to neutral.
+- usePaletteScroll(): one ScrollTrigger per [data-palette] element,
+  start top 45% / end bottom 45%, onToggle drives the shift. Bands must
+  not overlap (last-toggle-wins); gaps keep the last palette.
+  Architecture is trigger-agnostic so Layer 4's horizontal Flip can
+  drive the same function.
+- Verified body-text contrast AAA in all five palettes (15.5–19.1:1).
+  Known: muted #71717a on cream is 4.29:1 (secondary text only;
+  static token, unchanged). Cards stay dark slabs in cream by design
+  (only the 5 tokens shift) — they read as contrast blocks.
+- No project screenshots exist yet, so no border wrappers were needed;
+  future screenshot frames should use border-border.
+- Review fixes: catch-path supersession guard, hasOwn key check,
+  tween-handle nulling, neutral seeding, bottom-of-page neutral
+  fallback, rounded token writes.
+
 ## 2026-10-05 — Layer 2: hero decode, section reveals, Services, nav
 
 - New Services section (4 cards, 2x2 desktop / stacked mobile).

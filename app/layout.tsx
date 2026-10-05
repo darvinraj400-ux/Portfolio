@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Geist_Mono, Inter } from "next/font/google";
 import Nav from "@/components/layout/Nav";
+import PaletteDriver from "@/components/layout/PaletteDriver";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import { SITE } from "@/lib/constants";
 import "./globals.css";
@@ -54,6 +55,7 @@ export default function RootLayout({
     >
       <body className="min-h-full font-sans">
         <SmoothScroll>
+          <PaletteDriver />
           <Nav />
           {children}
         </SmoothScroll>

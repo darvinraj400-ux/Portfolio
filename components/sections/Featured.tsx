@@ -5,7 +5,7 @@ import { FEATURED_PROJECT as featured } from "@/lib/constants";
 
 export default function Featured() {
   return (
-    <section id="work" aria-label="Featured work" className="scroll-mt-14 px-6 py-24 sm:py-32">
+    <section id="work" aria-label="Featured work" data-palette="shelfsense" className="scroll-mt-14 px-6 py-24 sm:py-32">
       <Reveal className="mx-auto w-full max-w-5xl">
         <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
           Featured

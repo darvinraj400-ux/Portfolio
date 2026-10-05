@@ -21,45 +21,51 @@ export default function Products() {
         </h2>
         <div className="mt-10 flex flex-col gap-6">
           {products.map((project) => (
-            <Card key={project.slug} data-reveal>
-              <CardHeader>
-                <CardTitle>{project.name}</CardTitle>
-                <CardDescription>{project.oneLiner}</CardDescription>
-              </CardHeader>
-              <div className="flex flex-wrap items-center gap-4 px-6 pb-6">
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  Live site
-                  <ArrowUpRight className="size-4" aria-hidden="true" />
-                </a>
-                {project.caseStudy ? (
+            <div
+              key={project.slug}
+              data-palette={project.palette}
+              className="w-full"
+            >
+              <Card data-reveal>
+                <CardHeader>
+                  <CardTitle>{project.name}</CardTitle>
+                  <CardDescription>{project.oneLiner}</CardDescription>
+                </CardHeader>
+                <div className="flex flex-wrap items-center gap-4 px-6 pb-6">
                   <a
-                    href={project.caseStudy}
+                    href={project.link}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 hover:underline"
                   >
-                    Case study
+                    Live site
                     <ArrowUpRight className="size-4" aria-hidden="true" />
                   </a>
-                ) : null}
-                {project.repo ? (
-                  <a
-                    href={project.repo}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                  >
-                    Repo
-                    <ArrowUpRight className="size-4" aria-hidden="true" />
-                  </a>
-                ) : null}
-              </div>
-            </Card>
+                  {project.caseStudy ? (
+                    <a
+                      href={project.caseStudy}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                      Case study
+                      <ArrowUpRight className="size-4" aria-hidden="true" />
+                    </a>
+                  ) : null}
+                  {project.repo ? (
+                    <a
+                      href={project.repo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                      Repo
+                      <ArrowUpRight className="size-4" aria-hidden="true" />
+                    </a>
+                  ) : null}
+                </div>
+              </Card>
+            </div>
           ))}
         </div>
       </Reveal>
