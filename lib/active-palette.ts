@@ -2,6 +2,9 @@
 
 import { PALETTES, type Palette, type PaletteKey, type RGB } from "./palettes";
 
+// Color channels only. rainIntensity is deliberately NOT part of the
+// state (or the tween proxy shape): it rides alongside as a scalar so
+// clone() stays a pure RGB snapshot.
 type PaletteState = {
   bg: RGB;
   fg: RGB;
@@ -11,6 +14,8 @@ type PaletteState = {
   muted: RGB;
   mutedForeground: RGB;
 };
+
+type PaletteColors = PaletteState;
 
 const TOKEN_VARS = {
   bg: "--background-rgb",
@@ -27,7 +32,7 @@ const TOKEN_ENTRIES = Object.entries(TOKEN_VARS) as [
   (typeof TOKEN_VARS)[keyof typeof TOKEN_VARS],
 ][];
 
-function clone(p: Palette): PaletteState {
+function clone(p: PaletteColors): PaletteState {
   return {
     bg: [...p.bg],
     fg: [...p.fg],
@@ -54,6 +59,12 @@ function writeTokens(state: PaletteState): void {
   }
 }
 
+function writeIntensity(value: number): void {
+  if (typeof window !== "undefined") {
+    window.__rainIntensity = value;
+  }
+}
+
 function resolveKey(key: string): PaletteKey {
   return Object.hasOwn(PALETTES, key) ? (key as PaletteKey) : "neutral";
 }
@@ -61,6 +72,7 @@ function resolveKey(key: string): PaletteKey {
 // Seeded from neutral to match the CSS defaults in app/globals.css.
 let currentKey: PaletteKey = "neutral";
 let current: PaletteState = clone(PALETTES.neutral);
+let currentIntensity = PALETTES.neutral.rainIntensity;
 let tween: { kill: () => void } | null = null;
 
 /**
@@ -91,7 +103,9 @@ export function setActivePalette(
     tween = null;
     current = clone(PALETTES[target]);
     currentKey = target;
+    currentIntensity = PALETTES[target].rainIntensity;
     writeTokens(current);
+    writeIntensity(currentIntensity);
   };
 
   if (reduceMotion) {
@@ -102,6 +116,8 @@ export function setActivePalette(
   const duration = opts?.duration ?? 1.2;
   const from = clone(current);
   const to = PALETTES[target];
+  const fromIntensity = currentIntensity;
+  const toIntensity = to.rainIntensity;
   // Mark active up-front: same-key calls during the flight no-op and
   // converge on this target instead of restarting the tween.
   currentKey = target;
@@ -139,6 +155,7 @@ export function setActivePalette(
         mf0: from.mutedForeground[0],
         mf1: from.mutedForeground[1],
         mf2: from.mutedForeground[2],
+        ri: fromIntensity,
       };
       const readProxy = (): PaletteState => ({
         bg: rgb(proxy.bg0, proxy.bg1, proxy.bg2),
@@ -171,17 +188,22 @@ export function setActivePalette(
         mf0: to.mutedForeground[0],
         mf1: to.mutedForeground[1],
         mf2: to.mutedForeground[2],
+        ri: toIntensity,
         duration,
         ease: "power2.inOut",
         overwrite: true,
         onUpdate: () => {
           current = readProxy();
+          currentIntensity = proxy.ri;
           writeTokens(current);
+          writeIntensity(currentIntensity);
         },
         onComplete: () => {
           tween = null;
           current = clone(to);
+          currentIntensity = toIntensity;
           writeTokens(current);
+          writeIntensity(currentIntensity);
         },
       });
     })

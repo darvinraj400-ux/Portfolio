@@ -71,13 +71,13 @@
 }
 
 :root {
-  --background-rgb: 10 10 11;
-  --foreground-rgb: 245 245 244;
+  --background-rgb: 14 14 18;
+  --foreground-rgb: 237 233 224;
   --accent-rgb: 245 245 244;
   --accent-foreground-rgb: 10 10 11;
-  --border-rgb: 31 31 34;
-  --muted-rgb: 161 161 170;
-  --muted-foreground-rgb: 161 161 170;
+  --border-rgb: 38 36 42;
+  --muted-rgb: 168 163 153;
+  --muted-foreground-rgb: 128 124 116;
 
   --background: rgb(var(--background-rgb));
   --foreground: rgb(var(--foreground-rgb));
@@ -114,13 +114,13 @@
 }
 
 .dark {
-  --background-rgb: 10 10 11;
-  --foreground-rgb: 245 245 244;
+  --background-rgb: 14 14 18;
+  --foreground-rgb: 237 233 224;
   --accent-rgb: 245 245 244;
   --accent-foreground-rgb: 10 10 11;
-  --border-rgb: 31 31 34;
-  --muted-rgb: 161 161 170;
-  --muted-foreground-rgb: 161 161 170;
+  --border-rgb: 38 36 42;
+  --muted-rgb: 168 163 153;
+  --muted-foreground-rgb: 128 124 116;
 
   --background: rgb(var(--background-rgb));
   --foreground: rgb(var(--foreground-rgb));
@@ -159,11 +159,16 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+  /* The page background lives on <html> so the fixed rain canvas
+     (z-0, above the root background) stays visible. <body> stays
+     transparent; content wrapper paints no background of its own. */
   html {
     @apply font-sans;
+    background-color: var(--background);
+  }
+  body {
+    @apply text-foreground;
+    background-color: transparent;
   }
   /* Dark slabs never shift with the palette (bg-card is static), so
      their copy pins the light tones. The derived aliases must be
@@ -205,6 +210,23 @@
   .animate-spin-around {
     animation: none;
   }
+}
+
+/* Warm lamp glow breathing. CSS-driven (the no-CSS-animation rule
+   covers the rain itself); disabled under reduced motion where the
+   glow is not rendered at all. */
+@keyframes lamp-breathe {
+  0%,
+  100% {
+    opacity: 0.06;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+.animate-lamp-breathe {
+  animation: lamp-breathe 8s ease-in-out infinite;
 }
 
 /* Desktop pinned stage: UNLAYERED so it wins over Tailwind utilities,

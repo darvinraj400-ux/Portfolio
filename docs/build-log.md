@@ -2,6 +2,28 @@
 
 Reverse-chronological.
 
+## 2026-10-05 — Design: cinematic rain atmosphere
+
+- RainBackground: fixed canvas (z-0) with far/near streak layers,
+  wind drift, DPR cap 2, resize realloc, RAF pause on tab-hide,
+  adaptive throttle under sustained load. Pure canvas, no library.
+- Room: amber corner glow (8s breathe), static vignette, rare
+  lightning wash (45-90s, rAF-driven). Reduced-motion renders a
+  static gradient + vignette only — no canvas, no glow, no flash.
+- Intensity follows the palette via window.__rainIntensity lerped in
+  the palette tween: 1.4 shelfsense, 1.1 supportai, 0.9 leadflow,
+  0.3 fadeandco (near-drizzle calm), 1.0 neutral.
+- Neutral tokens warmed (bg [14,14,18], fg warm off-white);
+  body transparent with bg on <html> so the canvas shows through.
+  Nav scrolled state softened to bg-background/70. Accent pair
+  deliberately left cool (chrome vs. editorial tone).
+- Contrast on warm base: fg 15.90, muted 7.67, mutedFG 4.63 (AA).
+- First Load JS unchanged at 165 kB (canvas component is dependency-
+  free; GSAP still dynamic).
+- Review fixes: lightning clock rebased on tab return, debounced
+  resize with full-height drop distribution + visualViewport, print
+  hidden, live reduced-motion swap, NaN intensity guard.
+
 ## 2026-10-05 — Layer 5: about stats, magic UI accents, polish
 
 - AboutStats: three counters (3 Live projects / 4 AI patterns /
