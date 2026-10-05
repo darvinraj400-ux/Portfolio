@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowDown } from "lucide-react";
 import { SITE } from "@/lib/constants";
@@ -13,6 +13,8 @@ const SUBLINE_DELAY = 0.9;
 const h1ClassName =
   "font-serif text-5xl leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl";
 
+const SUBLINE = "Darvin Raj — Just a dev who ships.";
+
 /**
  * Hero with a one-time character decode on the h1.
  *
@@ -24,24 +26,92 @@ const h1ClassName =
  */
 export default function Hero() {
   const [animate, setAnimate] = useState(false);
+  const [decodeComplete, setDecodeComplete] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const sublineRef = useRef<HTMLParagraphElement>(null);
+
+  const text = SITE.positioning;
+  const chars = Array.from(text);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     setAnimate(true);
-  }, []);
+    // Gate parallax until ALL mount motion is done: the h1 decode
+    // ((chars-1) stagger steps + one char duration) and the subline
+    // fade (delay + duration), so gsap never shares a node with motion
+    // mid-tween. Buffer covers commit-to-paint.
+    const decodeMs = (chars.length - 1) * CHAR_STAGGER * 1000 + CHAR_DURATION * 1000;
+    const sublineMs = (SUBLINE_DELAY + 0.5) * 1000;
+    const timer = window.setTimeout(
+      () => setDecodeComplete(true),
+      Math.max(decodeMs, sublineMs) + 100,
+    );
+    return () => window.clearTimeout(timer);
+  }, [chars.length]);
 
-  const text = SITE.positioning;
-  const chars = Array.from(text);
+  // Parallax drift: headline/subline lag behind the scroll as the hero
+  // exits. Gated on decode completion so mid-decode scrolling never
+  // fights the character animation; reduced-motion and mobile-lean
+  // offsets handled inside.
+  useEffect(() => {
+    if (!animate || !decodeComplete) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const section = sectionRef.current;
+    const headline = headlineRef.current;
+    const subline = sublineRef.current;
+    if (!section || !headline || !subline) return;
+
+    let cancelled = false;
+    let cleanup: (() => void) | null = null;
+
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
+      .then(([gsapMod, stMod]) => {
+        if (cancelled) return;
+        const gsap = gsapMod.gsap ?? gsapMod.default;
+        const ScrollTrigger = stMod.ScrollTrigger ?? stMod.default;
+        gsap.registerPlugin(ScrollTrigger);
+
+          const ctx = gsap.context(() => {
+            // Manual gsap.set (not a bound tween), so no scrub smoothing
+            // to configure — values track scroll position directly.
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top top",
+              end: "bottom top",
+              onUpdate: (self) => {
+              const p = self.progress;
+              const mobile = window.innerWidth < 768;
+              const head = mobile ? -40 : -80;
+              const sub = mobile ? -60 : -120;
+              gsap.set(headline, { y: p * head });
+              gsap.set(subline, { y: p * sub });
+            },
+          });
+        }, section);
+
+        cleanup = () => ctx.revert();
+      })
+      .catch(() => {
+        // GSAP chunk failed — hero scrolls normally, no parallax.
+      });
+
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
+  }, [animate, decodeComplete]);
 
   return (
     <section
       id="top"
       aria-label="Introduction"
+      ref={sectionRef}
       className="flex min-h-[calc(100svh-3.5rem)] flex-col justify-center px-6"
     >
       <div className="mx-auto w-full max-w-5xl">
         {animate ? (
-          <h1 aria-label={text} className={h1ClassName}>
+          <h1 aria-label={text} ref={headlineRef} className={h1ClassName}>
             {chars.map((char, i) =>
               char === " " ? (
                 // Plain space: keeps a line-break opportunity so the h1
@@ -66,20 +136,21 @@ export default function Hero() {
             )}
           </h1>
         ) : (
-          <h1 className={h1ClassName}>{text}</h1>
+          <h1 ref={headlineRef} className={h1ClassName}>{text}</h1>
         )}
         {animate ? (
           <motion.p
+            ref={sublineRef}
             className="mt-6 text-base text-muted-foreground sm:text-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: SUBLINE_DELAY, duration: 0.5 }}
           >
-            Darvin Raj — full-stack engineer based in Kuala Lumpur.
+            {SUBLINE}
           </motion.p>
         ) : (
-          <p className="mt-6 text-base text-muted-foreground sm:text-lg">
-            Darvin Raj — full-stack engineer based in Kuala Lumpur.
+          <p ref={sublineRef} className="mt-6 text-base text-muted-foreground sm:text-lg">
+            {SUBLINE}
           </p>
         )}
         {animate ? (

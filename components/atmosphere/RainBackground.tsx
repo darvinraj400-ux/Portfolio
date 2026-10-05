@@ -145,7 +145,7 @@ export default function RainBackground() {
     let fpsAccum = 0;
     let fpsFrames = 0;
     let nextFlash =
-      startTime + 45000 + Math.random() * 45000;
+      startTime + 25000 + Math.random() * 25000;
     let flashStart = -1;
 
     const resize = () => {
@@ -186,7 +186,7 @@ export default function RainBackground() {
         last = now;
         flashStart = -1;
         if (lightningRef.current) lightningRef.current.style.opacity = "0";
-        nextFlash = Math.max(nextFlash, now + 45000 + Math.random() * 45000);
+        nextFlash = Math.max(nextFlash, now + 25000 + Math.random() * 25000);
         running = true;
         raf = requestAnimationFrame(frame);
       }
@@ -313,7 +313,9 @@ export default function RainBackground() {
           ? Math.round(1000 / (fpsAccum / fpsFrames))
           : 0;
 
-      // Rare lightning: ~80ms flash, ~200ms decay, every 45-90s.
+      // Double-flash lightning every 25-50s: primary ramps 0-80ms
+      // and decays by 200ms; secondary ramps 200-240ms to 60% peak
+      // and fades by 320ms. Single smooth envelope, no popping.
       const flashEl = lightningRef.current;
       if (flashEl) {
         if (flashStart < 0 && now >= nextFlash) {
@@ -321,14 +323,19 @@ export default function RainBackground() {
         }
         if (flashStart >= 0) {
           const t = now - flashStart;
+          const peak = width < 768 ? 0.18 : 0.22;
           if (t < 80) {
-            flashEl.style.opacity = `${((t / 80) * 0.15).toFixed(3)}`;
-          } else if (t < 280) {
-            flashEl.style.opacity = `${(0.15 * (1 - (t - 80) / 200)).toFixed(3)}`;
+            flashEl.style.opacity = `${((t / 80) * peak).toFixed(3)}`;
+          } else if (t < 200) {
+            flashEl.style.opacity = `${(peak * (1 - (t - 80) / 120)).toFixed(3)}`;
+          } else if (t < 240) {
+            flashEl.style.opacity = `${(((t - 200) / 40) * peak * 0.6).toFixed(3)}`;
+          } else if (t < 320) {
+            flashEl.style.opacity = `${(peak * 0.6 * (1 - (t - 240) / 80)).toFixed(3)}`;
           } else {
             flashEl.style.opacity = "0";
             flashStart = -1;
-            nextFlash = now + 45000 + Math.random() * 45000;
+            nextFlash = now + 25000 + Math.random() * 25000;
           }
         }
       }
@@ -390,14 +397,16 @@ export default function RainBackground() {
             "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
         }}
       />
-      {/* Lightning wash, driven from the RAF loop. Starts hidden. */}
+      {/* Lightning wash, driven from the RAF loop. Starts hidden.
+          Element opacity carries the flash peaks (gradient is full
+          strength so peaks read exactly). */}
       <div
         ref={lightningRef}
         className="absolute inset-x-0 top-0 h-[40vh]"
         style={{
           opacity: 0,
           background:
-            "linear-gradient(to bottom, rgba(200,220,255,0.15), transparent)",
+            "linear-gradient(to bottom, rgba(200,220,255,1), transparent 40%)",
         }}
       />
     </div>
