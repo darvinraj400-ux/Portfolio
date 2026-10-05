@@ -8,7 +8,7 @@ export default function Footer() {
         <p className="text-sm text-muted-foreground">
           {SITE.domain.replace("https://", "")} — © {year}
         </p>
-        <p className="text-sm text-muted-foreground">Built by hand.</p>
+        <p className="text-sm text-muted-foreground">Built by hand with Next.js, GSAP, and Magic UI.</p>
       </div>
     </footer>
   );

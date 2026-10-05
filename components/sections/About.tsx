@@ -1,4 +1,5 @@
 import Reveal from "@/components/layout/Reveal";
+import AboutStats from "@/components/sections/AboutStats";
 
 export default function About() {
   return (
@@ -27,6 +28,7 @@ export default function About() {
             purpose to find out where the guardrails should go.
           </p>
         </div>
+        <AboutStats />
       </Reveal>
     </section>
   );

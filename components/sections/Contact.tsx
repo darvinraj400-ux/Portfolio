@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import ContactCta from "@/components/sections/ContactCta";
 import Reveal from "@/components/layout/Reveal";
 import { SITE } from "@/lib/constants";
 
@@ -12,19 +13,29 @@ export default function Contact() {
         <p data-reveal className="mt-8 font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
           Have something worth building? Let&apos;s talk.
         </p>
-        <div data-reveal className="mt-8 flex flex-wrap items-center gap-6">
+        <p data-reveal className="mt-6 text-base text-muted-foreground">
+          Available for full-stack and AI integration work.
+        </p>
+        <p data-reveal className="text-base text-muted-foreground">
+          Based in Kuala Lumpur. Open to remote.
+        </p>
+        <div data-reveal className="mt-8">
+          <ContactCta />
+        </div>
+        <div data-reveal className="mt-4">
           <a
             href={`mailto:${SITE.email}`}
-            className="inline-flex items-center gap-2 text-base font-medium text-foreground underline-offset-4 hover:underline"
+            className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             {SITE.email}
-            <ArrowUpRight className="size-4" aria-hidden="true" />
           </a>
+        </div>
+        <div data-reveal className="mt-8">
           <a
             href={SITE.github}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 text-base text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             GitHub
             <ArrowUpRight className="size-4" aria-hidden="true" />

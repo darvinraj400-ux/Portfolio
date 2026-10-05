@@ -7,19 +7,19 @@ const SKILL_GROUPS = [
   },
   {
     label: "Frameworks",
-    items: ["Next.js", "React", "Tailwind CSS", "Node.js"],
+    items: ["Next.js", "React", "Flask"],
   },
   {
     label: "AI/ML",
-    items: ["LLM apps", "RAG", "Guardrails", "Prompt design"],
+    items: ["Vercel AI SDK", "scikit-learn", "RAG", "structured extraction"],
   },
   {
     label: "Data",
-    items: ["PostgreSQL", "Supabase", "Pandas"],
+    items: ["Postgres", "pgvector", "Supabase", "pandas"],
   },
   {
     label: "Infra",
-    items: ["Vercel", "Git", "Docker"],
+    items: ["Vercel", "Cloudflare", "Resend", "GitHub Actions"],
   },
 ] as const;
 

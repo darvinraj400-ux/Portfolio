@@ -2,6 +2,26 @@
 
 Reverse-chronological.
 
+## 2026-10-05 — Layer 5: about stats, magic UI accents, polish
+
+- AboutStats: three counters (3 Live projects / 4 AI patterns /
+  1 Registered copyright), NumberTicker on scroll-into-view, one-shot,
+  reduced-motion + no-JS render finals. Vendor spring has no duration
+  prop, so the ~1s settle is approximate, not 1200ms exact.
+- Contact: ShimmerButton CTA (accent surface, background text, subtle
+  shimmer) + plain-text email fallback link + availability lines.
+  Button accent-vs-text is 4.45/4.46 on supportai/fadeandco — hairline
+  under AA normal, passes 3:1 large-text; recorded, not patched.
+- Skills: category keep-list (Flask, Vercel AI SDK, scikit-learn,
+  pgvector, Cloudflare, Resend, GitHub Actions in).
+- Footer: "Built by hand with Next.js, GSAP, and Magic UI."
+- 404 / error / loading are token-only; fresh loads start neutral.
+- Magic UI as accent only (NumberTicker + ShimmerButton, no new deps);
+  scroll-cue shiny text skipped. Registry color defaults removed from
+  vendored files (tailwind-merge can't collapse project tokens).
+- Review fixes: mailto anchor fallback, noscript finals, focus-visible
+  ring on CTA, reduced-motion change listener, ticker reveal delay.
+
 ## 2026-10-05 — Layer 4: horizontal Flip
 
 - Products pins on desktop (ScrollTrigger pin + scrub 1, 1:1 travel);
