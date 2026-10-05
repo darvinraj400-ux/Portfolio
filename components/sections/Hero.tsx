@@ -13,7 +13,7 @@ const SUBLINE_DELAY = 0.9;
 const h1ClassName =
   "font-serif text-5xl leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl";
 
-const SUBLINE = "Darvin Raj — Just a dev who ships.";
+const SUBLINE = "Just a dev who ships.";
 
 /**
  * Hero with a one-time character decode on the h1.
