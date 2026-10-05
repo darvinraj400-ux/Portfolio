@@ -1,0 +1,36 @@
+import { ArrowUpRight } from "lucide-react";
+import Reveal from "@/components/layout/Reveal";
+import { SITE } from "@/lib/constants";
+
+export default function Contact() {
+  return (
+    <section id="contact" aria-label="Contact" className="scroll-mt-14 px-6 py-24 sm:py-32">
+      <Reveal className="mx-auto w-full max-w-5xl">
+        <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
+          Contact
+        </h2>
+        <p data-reveal className="mt-8 font-serif text-3xl tracking-tight text-foreground sm:text-4xl">
+          Have something worth building? Let&apos;s talk.
+        </p>
+        <div data-reveal className="mt-8 flex flex-wrap items-center gap-6">
+          <a
+            href={`mailto:${SITE.email}`}
+            className="inline-flex items-center gap-2 text-base font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            {SITE.email}
+            <ArrowUpRight className="size-4" aria-hidden="true" />
+          </a>
+          <a
+            href={SITE.github}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-base text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            GitHub
+            <ArrowUpRight className="size-4" aria-hidden="true" />
+          </a>
+        </div>
+      </Reveal>
+    </section>
+  );
+}

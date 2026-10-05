@@ -1,0 +1,33 @@
+"use client";
+
+import { useEffect } from "react";
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+  return (
+    <main className="flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center px-6 text-center">
+      <p className="text-sm text-muted-foreground">Something went wrong</p>
+      <h1 className="mt-4 font-serif text-4xl tracking-tight text-foreground">
+        This page hit its limits.
+      </h1>
+      {error.digest ? (
+        <p className="mt-4 text-sm text-muted-foreground">{error.digest}</p>
+      ) : null}
+      <button
+        type="button"
+        onClick={reset}
+        className="mt-8 text-sm font-medium text-foreground underline-offset-4 hover:underline"
+      >
+        Try again
+      </button>
+    </main>
+  );
+}
