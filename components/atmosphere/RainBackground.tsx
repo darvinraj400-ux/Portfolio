@@ -144,8 +144,9 @@ export default function RainBackground() {
     let drawFrames = 0;
     let fpsAccum = 0;
     let fpsFrames = 0;
-    let nextFlash =
-      startTime + 25000 + Math.random() * 25000;
+    // TEST VALUE — user evaluating high-frequency lightning.
+    // Revert to 12–18s random if too aggressive.
+    let nextFlash = startTime + 5000;
     let flashStart = -1;
 
     const resize = () => {
@@ -186,7 +187,7 @@ export default function RainBackground() {
         last = now;
         flashStart = -1;
         if (lightningRef.current) lightningRef.current.style.opacity = "0";
-        nextFlash = Math.max(nextFlash, now + 25000 + Math.random() * 25000);
+        nextFlash = Math.max(nextFlash, now + 5000);
         running = true;
         raf = requestAnimationFrame(frame);
       }
@@ -313,9 +314,8 @@ export default function RainBackground() {
           ? Math.round(1000 / (fpsAccum / fpsFrames))
           : 0;
 
-      // Double-flash lightning every 25-50s: primary ramps 0-80ms
-      // and decays by 200ms; secondary ramps 200-240ms to 60% peak
-      // and fades by 320ms. Single smooth envelope, no popping.
+      // TEST PEAKS — brighter double-flash for live evaluation.
+      // Primary 0.55, secondary absolute 0.35. Envelope unchanged.
       const flashEl = lightningRef.current;
       if (flashEl) {
         if (flashStart < 0 && now >= nextFlash) {
@@ -323,19 +323,20 @@ export default function RainBackground() {
         }
         if (flashStart >= 0) {
           const t = now - flashStart;
-          const peak = width < 768 ? 0.18 : 0.22;
+          const peak = 0.55;
+          const secondary = 0.35;
           if (t < 80) {
             flashEl.style.opacity = `${((t / 80) * peak).toFixed(3)}`;
           } else if (t < 200) {
             flashEl.style.opacity = `${(peak * (1 - (t - 80) / 120)).toFixed(3)}`;
           } else if (t < 240) {
-            flashEl.style.opacity = `${(((t - 200) / 40) * peak * 0.6).toFixed(3)}`;
+            flashEl.style.opacity = `${(((t - 200) / 40) * secondary).toFixed(3)}`;
           } else if (t < 320) {
-            flashEl.style.opacity = `${(peak * 0.6 * (1 - (t - 240) / 80)).toFixed(3)}`;
+            flashEl.style.opacity = `${(secondary * (1 - (t - 240) / 80)).toFixed(3)}`;
           } else {
             flashEl.style.opacity = "0";
             flashStart = -1;
-            nextFlash = now + 25000 + Math.random() * 25000;
+            nextFlash = now + 5000;
           }
         }
       }
