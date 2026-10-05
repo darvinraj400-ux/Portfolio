@@ -6,6 +6,7 @@ export type Palette = {
   accent: RGB;
   border: RGB;
   muted: RGB;
+  mutedForeground: RGB;
 };
 
 export type PaletteKey =
@@ -28,6 +29,7 @@ export const PALETTES: Record<PaletteKey, Palette> = {
     accent: [245, 245, 244],
     border: [31, 31, 34],
     muted: [161, 161, 170],
+    mutedForeground: [161, 161, 170],
   },
   shelfsense: {
     bg: [6, 17, 31],
@@ -35,6 +37,7 @@ export const PALETTES: Record<PaletteKey, Palette> = {
     accent: [16, 185, 129],
     border: [14, 42, 61],
     muted: [148, 163, 184],
+    mutedForeground: [161, 161, 170],
   },
   supportai: {
     bg: [9, 9, 11],
@@ -42,6 +45,7 @@ export const PALETTES: Record<PaletteKey, Palette> = {
     accent: [99, 102, 241],
     border: [39, 39, 42],
     muted: [161, 161, 170],
+    mutedForeground: [161, 161, 170],
   },
   leadflow: {
     bg: [10, 10, 11],
@@ -49,6 +53,7 @@ export const PALETTES: Record<PaletteKey, Palette> = {
     accent: [245, 158, 11],
     border: [39, 39, 42],
     muted: [161, 161, 170],
+    mutedForeground: [161, 161, 170],
   },
   fadeandco: {
     bg: [245, 241, 234],
@@ -56,5 +61,6 @@ export const PALETTES: Record<PaletteKey, Palette> = {
     accent: [180, 83, 9],
     border: [231, 222, 209],
     muted: [102, 96, 91],
+    mutedForeground: [92, 86, 81],
   },
 };

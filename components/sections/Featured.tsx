@@ -10,7 +10,7 @@ export default function Featured() {
         <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
           Featured
         </h2>
-        <article data-reveal className="mt-8 rounded-2xl border border-border bg-card p-8 sm:p-12">
+        <article data-reveal data-dark-panel className="mt-8 rounded-2xl border border-border bg-card p-8 sm:p-12">
           <div className="flex flex-wrap items-center gap-3">
             <Badge>Featured</Badge>
             {featured.role ? (

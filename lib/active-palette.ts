@@ -8,6 +8,7 @@ type PaletteState = {
   accent: RGB;
   border: RGB;
   muted: RGB;
+  mutedForeground: RGB;
 };
 
 const TOKEN_VARS = {
@@ -16,6 +17,7 @@ const TOKEN_VARS = {
   accent: "--accent-rgb",
   border: "--border-rgb",
   muted: "--muted-rgb",
+  mutedForeground: "--muted-foreground-rgb",
 } as const;
 
 const TOKEN_ENTRIES = Object.entries(TOKEN_VARS) as [
@@ -30,6 +32,7 @@ function clone(p: Palette): PaletteState {
     accent: [...p.accent],
     border: [...p.border],
     muted: [...p.muted],
+    mutedForeground: [...p.mutedForeground],
   };
 }
 
@@ -86,7 +89,9 @@ export function setActivePalette(
     current = clone(PALETTES[target]);
     currentKey = target;
     writeTokens(current);
-  };  if (reduceMotion) {
+  };
+
+  if (reduceMotion) {
     applyInstant();
     return;
   }
@@ -125,6 +130,9 @@ export function setActivePalette(
         mu0: from.muted[0],
         mu1: from.muted[1],
         mu2: from.muted[2],
+        mf0: from.mutedForeground[0],
+        mf1: from.mutedForeground[1],
+        mf2: from.mutedForeground[2],
       };
       const readProxy = (): PaletteState => ({
         bg: rgb(proxy.bg0, proxy.bg1, proxy.bg2),
@@ -132,6 +140,7 @@ export function setActivePalette(
         accent: rgb(proxy.ac0, proxy.ac1, proxy.ac2),
         border: rgb(proxy.bo0, proxy.bo1, proxy.bo2),
         muted: rgb(proxy.mu0, proxy.mu1, proxy.mu2),
+        mutedForeground: rgb(proxy.mf0, proxy.mf1, proxy.mf2),
       });
       tween = gsap.to(proxy, {
         bg0: to.bg[0],
@@ -149,6 +158,9 @@ export function setActivePalette(
         mu0: to.muted[0],
         mu1: to.muted[1],
         mu2: to.muted[2],
+        mf0: to.mutedForeground[0],
+        mf1: to.mutedForeground[1],
+        mf2: to.mutedForeground[2],
         duration,
         ease: "power2.inOut",
         overwrite: true,
