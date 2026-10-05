@@ -156,4 +156,66 @@
     --color-muted-foreground: var(--muted-foreground);
     --color-foreground: var(--foreground);
   }
+
+  /* Horizontal Flip: card details are visible by default (mobile,
+     reduced-motion, and no-JS all show details). The collapsing rule
+     below only applies inside the JS-driven desktop stage. */
+  .card-detail {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 400ms ease,
+      translate 400ms ease,
+      visibility 0s;
+  }
+  /* Keep keyboard focus visible on translated cards. */
+  .flip-track a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Desktop pinned stage: UNLAYERED so it wins over Tailwind utilities,
+   and gated on html.js-flip (set by use-horizontal-flip on setup) so
+   no-JS and GSAP-load failure keep the vertical stack instead of a
+   cropped, unreachable row. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html.js-flip .flip-stage {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-inline: 0;
+    padding-block: 0;
+  }
+  html.js-flip .flip-heading {
+    padding-inline: 1.5rem;
+  }
+  html.js-flip .flip-track {
+    flex-direction: row;
+    width: max-content;
+    align-items: stretch;
+    gap: 3rem;
+    padding-inline: 5vw;
+  }
+  html.js-flip .flip-card {
+    width: 70vw;
+    flex-shrink: 0;
+  }
+  html.js-flip [data-centered="false"] .card-detail {
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 12px;
+    pointer-events: none;
+    transition:
+      opacity 400ms ease,
+      translate 400ms ease,
+      visibility 0s 400ms;
+  }
+  html.js-flip [data-centered="true"] .card-detail {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+  }
 }

@@ -2,6 +2,29 @@
 
 Reverse-chronological.
 
+## 2026-10-05 — Layer 4: horizontal Flip
+
+- Products pins on desktop (ScrollTrigger pin + scrub 1, 1:1 travel);
+  vertical scroll translates a 3-card track (70vw cards). Mobile and
+  reduced-motion keep the vertical stack with details always visible.
+- Center detection runs on the TWEEN's onUpdate (scrub smoothing keeps
+  the track traveling after scroll settles; trigger onUpdate would read
+  stale geometry). Centered card gets data-centered + drives
+  setActivePalette; gap zones hold the last palette. onLeave → neutral.
+- Card details (case-study + repo links) expand via CSS attribute
+  toggle; always-visible = name + one-liner + Live site. No invented
+  content.
+- Layer-3 vertical triggers yield while #products is position:fixed
+  (their bands go stale inside the pin); approach/reverse/mobile use
+  the vertical path unchanged.
+- Keyboard: focusin centers the focused card (1px scroll = 1px travel);
+  Escape blurs + smooth-scrolls to Services. Lenis.resize() after pin
+  setup so long targets below the pin stay reachable.
+- Verified: pin/translate 1:1, all three palette+detail moments,
+  unpin-to-neutral, reverse, resize-refresh, mobile + reduced-motion
+  stacks, Tab-center, Escape exit, rapid fling convergence, zero
+  console errors on settled loads.
+
 ## 2026-10-05 — Layer 3: ambient palette shift
 
 - Palette tokens refactored to RGB triplets (`--background-rgb` etc. +

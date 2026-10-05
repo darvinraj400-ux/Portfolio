@@ -11,6 +11,7 @@ export type LenisLike = {
     options?: { offset?: number; immediate?: boolean },
   ) => void;
   raf: (time: number) => void;
+  resize?: () => void;
   destroy: () => void;
 };
 
