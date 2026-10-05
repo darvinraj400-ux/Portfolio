@@ -143,10 +143,17 @@
     @apply font-sans;
   }
   /* Dark slabs never shift with the palette (bg-card is static), so
-     their secondary copy pins the light muted tone — the animated page
-     token would fail on them in the cream band. */
+     their copy pins the light tones. The derived aliases must be
+     re-declared here too: var() inside custom properties substitutes
+     where the alias is DEFINED (:root), so overriding only the -rgb
+     triplets would leave text frozen on the page-level values. */
   [data-slot="card"],
   [data-dark-panel] {
     --muted-foreground-rgb: 161 161 170;
+    --foreground-rgb: 245 245 244;
+    --muted-foreground: rgb(var(--muted-foreground-rgb));
+    --foreground: rgb(var(--foreground-rgb));
+    --color-muted-foreground: var(--muted-foreground);
+    --color-foreground: var(--foreground);
   }
 }
