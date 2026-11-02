@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type RefObject } from "react";
+import { prefersReducedMotion } from "@/lib/motion";
 
 type RevealOptions = {
   /** Stagger in seconds between siblings. Defaults to 0.08. */
@@ -25,6 +26,7 @@ export function useSectionReveal(
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (prefersReducedMotion()) return;
     const root = ref.current;
     if (!root) return;
 

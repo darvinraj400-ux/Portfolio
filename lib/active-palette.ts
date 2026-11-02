@@ -1,6 +1,6 @@
 "use client";
 
-import { PALETTES, type Palette, type PaletteKey, type RGB } from "./palettes";
+import { PALETTES, type PaletteKey, type RGB } from "./palettes";
 
 // Color channels only. rainIntensity is deliberately NOT part of the
 // state (or the tween proxy shape): it rides alongside as a scalar so

@@ -1,9 +1,11 @@
 /**
  * GSAP + ScrollTrigger + Lenis wiring.
  *
- * Layer 2: shared Lenis instance + scrollToId. Palette-shift scroll
- * animations land in a later layer.
+ * Shared Lenis instance + scrollToId for in-page navigation. Reduced
+ * motion bypasses both: the browser scrolls instantly instead.
  */
+
+import { prefersReducedMotion } from "@/lib/motion";
 
 export type LenisLike = {
   scrollTo: (
@@ -12,6 +14,8 @@ export type LenisLike = {
   ) => void;
   raf: (time: number) => void;
   resize?: () => void;
+  stop?: () => void;
+  start?: () => void;
   destroy: () => void;
 };
 
@@ -26,13 +30,11 @@ export function getLenisInstance(): LenisLike | null {
 }
 
 export function initScrollAnimations(): () => void {
-  // TODO (later layer): register GSAP ScrollTrigger and tween
-  // `--background` / `--foreground` / `--accent` per section palette.
   return () => {};
 }
 
-/** Height of the sticky nav (h-14), mirrored by scroll-mt-14 on sections. */
-const NAV_OFFSET = -56;
+/** Height of the sticky nav (h-16), mirrored by scroll-mt-16 on sections. */
+const NAV_OFFSET = -64;
 
 export function scrollToId(id: string): void {
   if (typeof document === "undefined") return;
@@ -41,10 +43,13 @@ export function scrollToId(id: string): void {
   if (!el) return;
 
   const lenis = getLenisInstance();
-  if (lenis) {
+  if (lenis && !prefersReducedMotion()) {
     lenis.scrollTo(el, { offset: NAV_OFFSET });
     return;
   }
 
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  el.scrollIntoView({
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+    block: "start",
+  });
 }

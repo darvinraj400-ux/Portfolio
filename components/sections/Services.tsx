@@ -1,54 +1,62 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Reveal from "@/components/layout/Reveal";
+import SectionFrame from "@/components/layout/SectionFrame";
+import ScrambleText from "@/components/motion/ScrambleText";
 
 const SERVICES = [
   {
-    title: "Full-stack development",
-    body: "End-to-end product engineering: schema, API, front-end, deployment. Next.js, TypeScript, Postgres, Vercel.",
+    title: "Website Design & Development",
+    body: "Responsive websites, landing pages, portfolio websites and modern digital experiences.",
   },
   {
-    title: "AI integration",
-    body: "RAG pipelines, structured extraction, streaming chat. The LLM where it earns its place, plain code everywhere else.",
+    title: "Custom Web Applications",
+    body: "Functional web applications, dashboards, booking systems and business-oriented digital tools.",
   },
   {
-    title: "API & backend",
-    body: "REST and GraphQL services, auth, rate limiting, job queues. Designed for the failure cases, not the happy path.",
+    title: "AI Integration & Automation",
+    body: "AI-powered features, intelligent workflows, chatbots and practical automation solutions.",
   },
   {
-    title: "Technical consulting",
-    body: "Short engagements: architecture review, code audit, migration planning. Fixed scope, fixed fee.",
+    title: "UI/UX & Digital Product Design",
+    body: "Interface design, user experiences, wireframes, prototypes and mobile application concepts.",
+  },
+  {
+    title: "Rapid Prototyping & Development",
+    body: "Turning ideas into interactive prototypes and functional demonstrations using efficient development and AI-assisted workflows.",
   },
 ] as const;
 
 export default function Services() {
   return (
-    <section
-      id="services"
-      aria-label="Services"
-      data-palette="neutral"
-      className="scroll-mt-14 px-6 py-24 sm:py-32"
-    >
-      <Reveal className="mx-auto w-full max-w-5xl">
-        <h2
-          data-reveal
-          className="text-sm font-medium tracking-widest text-muted-foreground uppercase"
-        >
-          Services
-        </h2>
-        <p data-reveal className="mt-4 text-lg text-muted-foreground">
-          How I work with teams.
-        </p>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2">
-          {SERVICES.map((service) => (
-            <Card key={service.title} data-reveal>
-              <CardHeader>
-                <CardTitle>{service.title}</CardTitle>
-                <CardDescription>{service.body}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </Reveal>
-    </section>
+    <SectionFrame id="services" index="02" title="Services">
+      <ScrambleText
+        as="p"
+        className="max-w-xl text-2xl leading-tight tracking-tight text-paper sm:text-3xl"
+        text="What I can design, build and automate."
+        level="heading"
+      />
+
+      <ul className="mt-10 border-t border-line">
+        {SERVICES.map((service, index) => (
+          <li
+            key={service.title}
+            className="grid gap-3 border-b border-line py-7 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] sm:gap-8"
+          >
+            <ScrambleText
+              as="h3"
+              className="text-base font-medium text-paper sm:text-lg"
+              text={service.title}
+              level="heading"
+              delay={40 + index * 50}
+            />
+            <ScrambleText
+              as="p"
+              className="text-sm leading-relaxed text-silver"
+              text={service.body}
+              level="body"
+              delay={80 + index * 50}
+            />
+          </li>
+        ))}
+      </ul>
+    </SectionFrame>
   );
 }

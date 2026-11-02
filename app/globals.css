@@ -4,13 +4,101 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@property --background {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #000000;
+}
+@property --foreground {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f2f2f2;
+}
+@property --paper {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --silver {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #a8a8a8;
+}
+@property --ash {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8a8a8a;
+}
+@property --graphite {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #333333;
+}
+@property --line {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #242424;
+}
+@property --line-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #3a3a3a;
+}
+@property --surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #080808;
+}
+@property --surface-raised {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0d0d0d;
+}
+@property --vortex-core {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #070708;
+}
+@property --vortex-mid {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #030303;
+}
+@property --vortex-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #000000;
+}
+@property --reticle-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(255, 255, 255, 0.8);
+}
+@property --reticle-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --reticle-halo {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 0, 0, 0.85);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-silver: var(--silver);
+  --color-ash: var(--ash);
+  --color-graphite: var(--graphite);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
-  --font-heading: var(--font-serif);
+  --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -40,231 +128,952 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) * 0.66);
+  --radius-md: calc(var(--radius) * 0.85);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
-  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
-  @keyframes shimmer-slide {
-  to {
-    transform: translate(calc(100cqw - 100%), 0);
-    }
-  }
-  @keyframes spin-around {
-  0% {
-    transform: translateZ(0) rotate(0);
-    }
-  15%, 35% {
-    transform: translateZ(0) rotate(90deg);
-    }
-  65%, 85% {
-    transform: translateZ(0) rotate(270deg);
-    }
-  100% {
-    transform: translateZ(0) rotate(360deg);
-    }
-  }
 }
 
+/* DARVINN STUDIO palette: black, white, silver, graphite. */
 :root {
-  --background-rgb: 14 14 18;
-  --foreground-rgb: 237 233 224;
-  --accent-rgb: 245 245 244;
-  --accent-foreground-rgb: 10 10 11;
-  --border-rgb: 38 36 42;
-  --muted-rgb: 168 163 153;
-  --muted-foreground-rgb: 128 124 116;
+  color-scheme: dark;
 
-  --background: rgb(var(--background-rgb));
-  --foreground: rgb(var(--foreground-rgb));
-  --card: #131316;
-  --card-foreground: #f5f5f4;
-  --popover: #131316;
-  --popover-foreground: #f5f5f4;
-  --primary: #f5f5f4;
-  --primary-foreground: #0a0a0b;
-  --secondary: #1c1c1f;
-  --secondary-foreground: #f5f5f4;
-  --muted: rgb(var(--muted-rgb));
-  --muted-foreground: rgb(var(--muted-foreground-rgb));
-  --accent: rgb(var(--accent-rgb));
-  --accent-foreground: rgb(var(--accent-foreground-rgb));
-  --destructive: #e0655f;
-  --border: rgb(var(--border-rgb));
-  --input: #26262b;
-  --ring: #52525b;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: #0a0a0b;
-  --sidebar-foreground: #f5f5f4;
-  --sidebar-primary: #f5f5f4;
-  --sidebar-primary-foreground: #0a0a0b;
-  --sidebar-accent: #1c1c1f;
-  --sidebar-accent-foreground: #f5f5f4;
-  --sidebar-border: #1f1f22;
-  --sidebar-ring: #52525b;
+  --background: #000000;
+  --foreground: #f2f2f2;
+  --paper: #ffffff;
+  --silver: #a8a8a8;
+  --ash: #8a8a8a;
+  --graphite: #333333;
+  --line: #242424;
+  --line-strong: #3a3a3a;
+  --surface: #080808;
+  --surface-raised: #0d0d0d;
+  --vortex-core: #070708;
+  --vortex-mid: #030303;
+  --vortex-edge: #000000;
+  --reticle-ink: rgba(255, 255, 255, 0.92);
+  --reticle-strong: #ffffff;
+  --reticle-halo: rgba(0, 0, 0, 0.9);
+
+  --card: var(--surface);
+  --card-foreground: #f5f5f5;
+  --popover: #0a0a0a;
+  --popover-foreground: #f5f5f5;
+  --primary: #f5f5f5;
+  --primary-foreground: #000000;
+  --secondary: #161616;
+  --secondary-foreground: #f5f5f5;
+  --muted: var(--surface-raised);
+  --muted-foreground: var(--silver);
+  --accent: #1a1a1a;
+  --accent-foreground: #f5f5f5;
+  --destructive: #8a8a8a;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: #ffffff;
+  --chart-1: #f5f5f5;
+  --chart-2: #c9c9c9;
+  --chart-3: #a8a8a8;
+  --chart-4: #6b6b6b;
+  --chart-5: #333333;
+  --radius: 0.375rem;
+  --sidebar: #050505;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #f5f5f5;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #161616;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: var(--line);
+  --sidebar-ring: #ffffff;
 }
 
-.dark {
-  --background-rgb: 14 14 18;
-  --foreground-rgb: 237 233 224;
-  --accent-rgb: 245 245 244;
-  --accent-foreground-rgb: 10 10 11;
-  --border-rgb: 38 36 42;
-  --muted-rgb: 168 163 153;
-  --muted-foreground-rgb: 128 124 116;
+/* Illuminated studio: same monochrome identity, inverted material logic. */
+html[data-theme="light"] {
+  color-scheme: light;
 
-  --background: rgb(var(--background-rgb));
-  --foreground: rgb(var(--foreground-rgb));
-  --card: #131316;
-  --card-foreground: #f5f5f4;
-  --popover: #131316;
-  --popover-foreground: #f5f5f4;
-  --primary: #f5f5f4;
-  --primary-foreground: #0a0a0b;
-  --secondary: #1c1c1f;
-  --secondary-foreground: #f5f5f4;
-  --muted: rgb(var(--muted-rgb));
-  --muted-foreground: rgb(var(--muted-foreground-rgb));
-  --accent: rgb(var(--accent-rgb));
-  --accent-foreground: rgb(var(--accent-foreground-rgb));
-  --destructive: #e0655f;
-  --border: rgb(var(--border-rgb));
-  --input: #26262b;
-  --ring: #52525b;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: #0a0a0b;
-  --sidebar-foreground: #f5f5f4;
-  --sidebar-primary: #f5f5f4;
-  --sidebar-primary-foreground: #0a0a0b;
-  --sidebar-accent: #1c1c1f;
-  --sidebar-accent-foreground: #f5f5f4;
-  --sidebar-border: #1f1f22;
-  --sidebar-ring: #52525b;
+  --background: #f2f2f0;
+  --foreground: #101010;
+  --paper: #101010;
+  --silver: #4b4b49;
+  --ash: #6f6e6a;
+  --graphite: #bab9b3;
+  --line: #d9d8d2;
+  --line-strong: #b9b8b2;
+  --surface: #ffffff;
+  --surface-raised: #f7f7f5;
+  --vortex-core: #f8f8f6;
+  --vortex-mid: #efeeeb;
+  --vortex-edge: #e2e1dc;
+  --reticle-ink: rgba(16, 16, 16, 0.9);
+  --reticle-strong: #101010;
+  --reticle-halo: rgba(255, 255, 255, 0.95);
+
+  --card: var(--surface);
+  --card-foreground: #101010;
+  --popover: #ffffff;
+  --popover-foreground: #101010;
+  --primary: #101010;
+  --primary-foreground: #f2f2f0;
+  --secondary: #e8e7e2;
+  --secondary-foreground: #101010;
+  --muted: var(--surface-raised);
+  --muted-foreground: var(--silver);
+  --accent: #e4e3de;
+  --accent-foreground: #101010;
+  --destructive: #6f6e6a;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: #101010;
+  --chart-1: #101010;
+  --chart-2: #3a3a38;
+  --chart-3: #6f6e6a;
+  --chart-4: #a3a29c;
+  --chart-5: #d9d8d2;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #101010;
+  --sidebar-primary: #101010;
+  --sidebar-primary-foreground: #f2f2f0;
+  --sidebar-accent: #e8e7e2;
+  --sidebar-accent-foreground: #101010;
+  --sidebar-border: var(--line);
+  --sidebar-ring: #101010;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
-  /* The page background lives on <html> so the fixed rain canvas
-     (z-0, above the root background) stays visible. <body> stays
-     transparent; content wrapper paints no background of its own. */
+
   html {
     @apply font-sans;
     background-color: var(--background);
+    color-scheme: dark;
+    scrollbar-color: var(--line-strong) var(--background);
+    scrollbar-width: thin;
+    transition-property: --background, --foreground, --paper, --silver, --ash,
+      --graphite, --line, --line-strong, --surface, --surface-raised,
+      --vortex-core, --vortex-mid, --vortex-edge, --reticle-ink,
+      --reticle-strong, --reticle-halo;
+    transition-duration: 420ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  html[data-theme="light"] {
+    color-scheme: light;
+  }
+
   body {
     @apply text-foreground;
     background-color: transparent;
   }
-  /* Dark slabs never shift with the palette (bg-card is static), so
-     their copy pins the light tones. The derived aliases must be
-     re-declared here too: var() inside custom properties substitutes
-     where the alias is DEFINED (:root), so overriding only the -rgb
-     triplets would leave text frozen on the page-level values. */
-  [data-slot="card"],
-  [data-dark-panel] {
-    --muted-foreground-rgb: 161 161 170;
-    --foreground-rgb: 245 245 244;
-    --muted-foreground: rgb(var(--muted-foreground-rgb));
-    --foreground: rgb(var(--foreground-rgb));
-    --color-muted-foreground: var(--muted-foreground);
-    --color-foreground: var(--foreground);
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--paper);
+    text-wrap: balance;
   }
 
-  /* Horizontal Flip: card details are visible by default (mobile and
-     no-JS all show details). The collapsing rule below only applies
-     inside the JS-driven desktop stage. */
-  .card-detail {
-    opacity: 1;
-    visibility: visible;
-    transition:
-      opacity 400ms ease,
-      translate 400ms ease,
-      visibility 0s;
+  p {
+    text-wrap: pretty;
   }
-/* Keep keyboard focus visible on translated cards. */
-.flip-track a:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-}
 
-/* Warm lamp glow breathing. CSS-driven. */
-@keyframes lamp-breathe {
-  0%,
-  100% {
-    opacity: 0.06;
+  ::selection {
+    background-color: var(--paper);
+    color: var(--background);
   }
-  50% {
-    opacity: 0.1;
+
+  :focus-visible {
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--background);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--line-strong);
+    }
   }
 }
 
-.animate-lamp-breathe {
-  animation: lamp-breathe 8s ease-in-out infinite;
+/* Layout shell shared by nav, sections and footer. */
+.shell {
+  width: 100%;
+  max-width: 78rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
-/* Desktop pinned stage: UNLAYERED so it wins over Tailwind utilities,
-   and gated on html.js-flip (set by use-horizontal-flip on setup) so
-   no-JS and GSAP-load failure keep the vertical stack instead of a
-   cropped, unreachable row. */
-@media (min-width: 1024px) {
-  html.js-flip .flip-stage {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
-    padding-inline: 0;
-    padding-block: 0;
+/* Technical metadata: mono, small, quiet. Sentence case on purpose. */
+.mono-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: var(--silver);
+}
+
+.display {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
+}
+
+.hero-wordmark {
+  font-family: var(--font-sans);
+  font-size: clamp(3.6rem, 20vw, 12.5rem);
+  font-weight: 600;
+  letter-spacing: -0.062em;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+
+/* Brushed silver for the second wordmark line. Solid fallback first. */
+.text-chrome {
+  color: #b4b4b4;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .text-chrome {
+    background-image: linear-gradient(
+      180deg,
+      #f7f7f7 0%,
+      #d2d2d2 32%,
+      #7c7c7c 50%,
+      #ededed 66%,
+      #8f8f8f 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
-  html.js-flip .flip-heading {
-    padding-inline: 1.5rem;
+
+  /* The decode overlay paints the only visible glyphs; the host's clip sees
+     only hidden layers, so the live copy repeats the chrome fill. */
+  .text-chrome .scramble-live {
+    background-image: inherit;
+    background-size: inherit;
+    background-position: inherit;
+    background-repeat: inherit;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
-  html.js-flip .flip-track {
-    flex-direction: row;
-    width: max-content;
-    align-items: stretch;
-    gap: 3rem;
-    padding-inline: 5vw;
+}
+
+@media (forced-colors: active) {
+  .text-chrome {
+    background-image: none;
+    color: CanvasText;
   }
-  html.js-flip .flip-card {
-    width: 70vw;
-    flex-shrink: 0;
-  }
-  html.js-flip [data-centered="false"] .card-detail {
+}
+
+/* Fine vertical rules behind the opening frame. */
+.studio-grid {
+  background-image: linear-gradient(
+    to right,
+    var(--line) 1px,
+    transparent 1px
+  );
+  background-size: calc(100% / 6) 100%;
+  opacity: 0.4;
+  mask-image: linear-gradient(to bottom, black, transparent 92%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 92%);
+}
+
+.studio-glow {
+  background: radial-gradient(
+    58% 46% at 22% 0%,
+    rgba(255, 255, 255, 0.09),
+    transparent 72%
+  );
+}
+
+.skip-link {
+  position: fixed;
+  top: -6rem;
+  left: 1rem;
+  z-index: 100;
+  background: var(--paper);
+  color: var(--background);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: top 150ms ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 220ms ease;
+}
+
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* Fullscreen project gallery: top-layer black, content fades over the page. */
+.project-lightbox[open] {
+  animation: lightbox-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-lightbox::backdrop {
+  background: rgb(0 0 0 / 0.92);
+}
+
+@keyframes lightbox-in {
+  from {
     opacity: 0;
-    visibility: hidden;
-    translate: 0 12px;
-    pointer-events: none;
-    transition:
-      opacity 400ms ease,
-      translate 400ms ease,
-      visibility 0s 400ms;
   }
-  html.js-flip [data-centered="true"] .card-detail {
+  to {
     opacity: 1;
-    visibility: visible;
-    translate: 0 0;
   }
 }
 
-/* Skills marquee: UNLAYERED so it wins over Tailwind utilities. Each
-   track holds two identical halves; translating -50% loops seamlessly. */
+/* One orchestrated entrance for the opening frame, CSS only. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-enter {
+    opacity: 0;
+    animation: hero-rise 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .hero-enter-1 {
+    animation-delay: 90ms;
+  }
+  .hero-enter-2 {
+    animation-delay: 180ms;
+  }
+  .hero-enter-3 {
+    animation-delay: 270ms;
+  }
+}
+
+/* Opening calibration plate. Decorative, fixed 2.2s, never blocks the page. */
+.calibration {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+
+html[data-intro="run"] .calibration {
+  display: block;
+  animation: calibration-plate 2200ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.calibration[data-dismissed="true"] {
+  display: none;
+}
+
+.calibration-plate {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.calibration-grid {
+  position: absolute;
+  inset: 0;
+}
+
+@keyframes calibration-plate {
+  0%,
+  81% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+.calibration-line {
+  transform: translate3d(0, 110%, 0);
+}
+
+html[data-intro="run"] .calibration-line {
+  animation: calibration-rise 820ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+html[data-intro="run"] .calibration-line-2 {
+  animation-delay: 90ms;
+}
+
+@keyframes calibration-rise {
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.calibration-meta {
+  opacity: 0;
+}
+
+html[data-intro="run"] .calibration-meta {
+  animation: calibration-fade 420ms ease 120ms forwards;
+}
+
+.calibration-ticks {
+  opacity: 0;
+}
+
+html[data-intro="run"] .calibration-ticks {
+  animation: calibration-fade 300ms ease 620ms forwards;
+}
+
+.calibration-scale-line {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+html[data-intro="run"] .calibration-scale-line {
+  animation: calibration-measure 1100ms cubic-bezier(0.22, 1, 0.36, 1) 620ms
+    forwards;
+}
+
+@keyframes calibration-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes calibration-measure {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.calibration-skip {
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calibration {
+    display: none !important;
+  }
+}
+
+/* Survey reticle: a fixed desktop cursor. Native cursor only returns where
+   text entry or the dialog top layer needs it. */
+.reticle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 90ms ease-out;
+  filter:
+    drop-shadow(0 0 0.6px var(--reticle-halo))
+    drop-shadow(0 0 1.8px var(--reticle-halo));
+  will-change: transform;
+}
+
+.reticle[data-visible="true"] {
+  opacity: 1;
+}
+
+.reticle-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  will-change: transform;
+}
+
+.reticle-ticks {
+  position: absolute;
+  inset: 0;
+  transform: scale(1);
+  transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reticle[data-target="true"] .reticle-ticks {
+  transform: scale(0.94);
+}
+
+.reticle[data-pressed="true"] .reticle-ticks {
+  transform: scale(0.8);
+  transition-duration: 90ms;
+}
+
+.reticle-corner {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.reticle-corner-tl {
+  left: 0;
+  top: 0;
+}
+
+.reticle-corner-tr {
+  right: 0;
+  top: 0;
+}
+
+.reticle-corner-bl {
+  left: 0;
+  bottom: 0;
+}
+
+.reticle-corner-br {
+  right: 0;
+  bottom: 0;
+}
+
+.reticle-arm {
+  position: absolute;
+  background: var(--reticle-ink);
+  transition:
+    transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 120ms ease-out;
+}
+
+.reticle-arm-x {
+  width: 11px;
+  height: 2px;
+}
+
+.reticle-arm-y {
+  width: 2px;
+  height: 11px;
+}
+
+.reticle-corner-tl .reticle-arm-x {
+  left: 0;
+  top: 0;
+  transform: scaleX(0.8);
+  transform-origin: left center;
+}
+
+.reticle-corner-tl .reticle-arm-y {
+  left: 0;
+  top: 0;
+  transform: scaleY(0.8);
+  transform-origin: center top;
+}
+
+.reticle-corner-tr .reticle-arm-x {
+  right: 0;
+  top: 0;
+  transform: scaleX(0.8);
+  transform-origin: right center;
+}
+
+.reticle-corner-tr .reticle-arm-y {
+  right: 0;
+  top: 0;
+  transform: scaleY(0.8);
+  transform-origin: center top;
+}
+
+.reticle-corner-bl .reticle-arm-x {
+  left: 0;
+  bottom: 0;
+  transform: scaleX(0.8);
+  transform-origin: left center;
+}
+
+.reticle-corner-bl .reticle-arm-y {
+  left: 0;
+  bottom: 0;
+  transform: scaleY(0.8);
+  transform-origin: center bottom;
+}
+
+.reticle-corner-br .reticle-arm-x {
+  right: 0;
+  bottom: 0;
+  transform: scaleX(0.8);
+  transform-origin: right center;
+}
+
+.reticle-corner-br .reticle-arm-y {
+  right: 0;
+  bottom: 0;
+  transform: scaleY(0.8);
+  transform-origin: center bottom;
+}
+
+.reticle[data-target="true"] .reticle-corner-tl .reticle-arm-x,
+.reticle[data-target="true"] .reticle-corner-bl .reticle-arm-x {
+  transform: scaleX(1);
+}
+
+.reticle[data-target="true"] .reticle-corner-tr .reticle-arm-x,
+.reticle[data-target="true"] .reticle-corner-br .reticle-arm-x {
+  transform: scaleX(1);
+}
+
+.reticle[data-target="true"] .reticle-corner-tl .reticle-arm-y,
+.reticle[data-target="true"] .reticle-corner-tr .reticle-arm-y {
+  transform: scaleY(1);
+}
+
+.reticle[data-target="true"] .reticle-corner-bl .reticle-arm-y,
+.reticle[data-target="true"] .reticle-corner-br .reticle-arm-y {
+  transform: scaleY(1);
+}
+
+.reticle-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: var(--reticle-ink);
+  transition:
+    background-color 120ms ease-out,
+    transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reticle[data-target="true"] .reticle-dot {
+  background: var(--reticle-strong);
+  transform: scale(1.34);
+}
+
+.reticle[data-target="true"] .reticle-arm {
+  background: var(--reticle-strong);
+}
+
+html[data-cursor="instrument"],
+html[data-cursor="instrument"] * {
+  cursor: none;
+}
+
+html[data-cursor="instrument"]
+  :is(input, textarea, select, [contenteditable]:not([contenteditable="false"])) {
+  cursor: auto;
+}
+
+html[data-cursor="instrument"]:has(dialog[open]),
+html[data-cursor="instrument"]:has(dialog[open]) * {
+  cursor: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reticle {
+    display: none;
+  }
+
+  html[data-cursor="instrument"],
+  html[data-cursor="instrument"] * {
+    cursor: auto !important;
+  }
+}
+
+/* Plate & Exposure: masks and rules register type without moving layout. */
+.plate-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.plate-line,
+.plate-follow,
+.plate-sweep,
+.plate-title-inner {
+  display: block;
+}
+
+.plate-label {
+  display: inline-block;
+}
+
+.plate-rule,
+.plate-route-rule {
+  transform-origin: left;
+}
+
+.plate-cover-shutter {
+  display: none;
+}
+
+@keyframes plate-rise {
+  from {
+    transform: translate3d(0, 105%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes plate-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes plate-title-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+    clip-path: inset(120% 0 -20% 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(-20% 0 -20% 0);
+  }
+}
+
+@keyframes plate-label-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes plate-rule-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes plate-sweep {
+  from {
+    background-position:
+      0 0,
+      130% 0;
+  }
+  to {
+    background-position:
+      0 0,
+      -30% 0;
+  }
+}
+
+@keyframes plate-cover-expose {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes archive-card-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+@keyframes archive-count-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 3px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-intro="run"] .hero-plate .plate-line {
+    animation: plate-rise 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
+  }
+
+  html[data-intro="run"] .hero-plate .plate-line-2 {
+    animation-delay: 1590ms;
+  }
+
+  html[data-intro="run"] .hero-plate .plate-follow {
+    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 1700ms both;
+  }
+
+  .plate-title-inner {
+    animation: plate-title-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .plate-meta-1 {
+    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+  }
+
+  .plate-meta-2 {
+    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
+  }
+
+  .plate-meta-3 {
+    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+  }
+
+  .plate-route-rule {
+    animation: plate-rule-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .plate-section[data-plate="waiting"] .plate-label {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .plate-section[data-plate="waiting"] .plate-rule {
+    transform: scaleX(0);
+  }
+
+  .plate-section[data-plate="waiting"] .plate-body {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+
+  .plate-section[data-plate="playing"] .plate-label {
+    animation: plate-label-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+  }
+
+  .plate-section[data-plate="playing"] .plate-rule {
+    animation: plate-rule-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .plate-section[data-plate="playing"] .plate-body {
+    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
+  }
+
+  .plate-cover-shutter {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: #000;
+    pointer-events: none;
+    animation: plate-cover-expose 500ms cubic-bezier(0.22, 1, 0.36, 1) 120ms
+      both;
+  }
+
+  .archive-card {
+    animation: archive-card-in 180ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .archive-count {
+    display: inline-block;
+    animation: archive-count-in 120ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    html[data-intro="run"] .hero-plate .plate-sweep {
+      background-image:
+        linear-gradient(
+          180deg,
+          #f7f7f7 0%,
+          #d2d2d2 32%,
+          #7c7c7c 50%,
+          #ededed 66%,
+          #8f8f8f 100%
+        ),
+        linear-gradient(
+          90deg,
+          transparent 38%,
+          rgba(255, 255, 255, 0.45) 50%,
+          transparent 62%
+        );
+      background-size:
+        100% 100%,
+        260% 100%;
+      background-repeat: no-repeat;
+      background-position:
+        0 0,
+        130% 0;
+      animation: plate-sweep 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate-cover-shutter {
+    display: none !important;
+  }
+
+  .archive-card,
+  .archive-count {
+    animation: none !important;
+    clip-path: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .plate-line,
+  .plate-follow,
+  .plate-title-inner,
+  .plate-meta-1,
+  .plate-meta-2,
+  .plate-meta-3,
+  .plate-label,
+  .plate-rule,
+  .plate-route-rule,
+  .plate-body {
+    animation: none !important;
+    clip-path: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Text scramble: the hidden reserve owns layout so decoding cannot shift it;
+   the live copy sits on top and never contributes metrics. */
+.scramble-host {
+  position: relative;
+}
+
+.scramble-live {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* Display sizes run tight leading; clipping would cut glyph edges. */
+.scramble-host:not([data-scramble-level="headline"]) .scramble-live {
+  overflow: hidden;
+}
+
+.scramble-reserve {
+  visibility: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Skills ticker: two identical halves translated -50% loop seamlessly. */
 @keyframes marquee-left {
   from {
     transform: translateX(0);
@@ -288,8 +1097,15 @@
   mask-image: linear-gradient(
     to right,
     transparent,
-    black 10%,
-    black 90%,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
     transparent
   );
 }
@@ -307,4 +1123,381 @@
 .marquee:hover .marquee-track,
 .marquee:focus-within .marquee-track {
   animation-play-state: paused;
+}
+
+/* Reduced motion: no decorous movement. Tickers become scrollable rows. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .marquee {
+    overflow-x: auto;
+    mask-image: linear-gradient(
+      to right,
+      black 0%,
+      black 88%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black 0%,
+      black 88%,
+      transparent 100%
+    );
+    scrollbar-width: thin;
+  }
+
+  .marquee-track {
+    animation: none !important;
+  }
+
+  .marquee-track > [aria-hidden="true"] {
+    display: none;
+  }
+}
+
+html[data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+
+html[data-motion="reduced"] .marquee {
+  overflow-x: auto;
+  mask-image: linear-gradient(to right, black 0%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 88%,
+    transparent 100%
+  );
+  scrollbar-width: thin;
+}
+
+html[data-motion="reduced"] .marquee-track {
+  animation: none !important;
+}
+
+html[data-motion="reduced"] .marquee-track > [aria-hidden="true"] {
+  display: none;
+}
+
+/* Light mode: graphite wordmark instead of brushed silver. */
+html[data-theme="light"] .text-chrome {
+  color: #2b2b29;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  html[data-theme="light"] .text-chrome {
+    background-image: linear-gradient(
+      180deg,
+      #4a4a47 0%,
+      #222220 32%,
+      #6b6a66 50%,
+      #171716 66%,
+      #3f3f3c 100%
+    );
+  }
+}
+
+html[data-theme="light"] .studio-glow {
+  background: radial-gradient(
+    58% 46% at 22% 0%,
+    rgba(16, 16, 16, 0.055),
+    transparent 72%
+  );
+}
+
+html[data-theme="light"] .project-lightbox::backdrop {
+  background: rgb(242 242 240 / 0.94);
+}
+
+html[data-theme="light"] .calibration {
+  background: var(--background);
+}
+
+.plate-cover-shutter {
+  background: var(--background);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+    html[data-theme="light"][data-intro="run"]
+      .hero-plate
+      .plate-sweep {
+      background-image:
+        linear-gradient(
+          180deg,
+          #4a4a47 0%,
+          #222220 32%,
+          #6b6a66 50%,
+          #171716 66%,
+          #3f3f3c 100%
+        ),
+        linear-gradient(
+          90deg,
+          transparent 38%,
+          rgba(16, 16, 16, 0.16) 50%,
+          transparent 62%
+        );
+    }
+  }
+}
+
+/* Pull chain: ceiling bracket, segmented cord, chrome pull handle. */
+.pull-chain {
+  position: fixed;
+  top: 0;
+  right: calc(7.5rem + env(safe-area-inset-right, 0px));
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* The platform menu is a full-width sheet; keep the chain out of it. */
+@media (max-width: 767px) {
+  html:has(#mobile-menu) .pull-chain {
+    visibility: hidden;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .pull-chain {
+    right: calc(9.5rem + env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (min-width: 1280px) {
+  .pull-chain {
+    right: calc(0.25rem + env(safe-area-inset-right, 0px));
+  }
+}
+
+.pull-chain-bracket {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 9px;
+  border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    #f7f7f5 0%,
+    #b9babd 34%,
+    #626367 62%,
+    #e9e9e6 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.pull-chain-bracket span {
+  position: absolute;
+  top: 5px;
+  width: 2px;
+  height: 7px;
+  background: #8a8b8e;
+}
+
+.pull-chain-bracket span:first-child {
+  left: 6px;
+  transform: rotate(16deg);
+}
+
+.pull-chain-bracket span:last-child {
+  right: 6px;
+  transform: rotate(-16deg);
+}
+
+.pull-chain-swing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+
+.pull-chain-cord {
+  display: block;
+  width: 3px;
+  height: calc(58px + var(--pull-stretch, 0px));
+  background: linear-gradient(
+    90deg,
+    #636467 0%,
+    #f4f4f1 42%,
+    #c9c9c7 58%,
+    #55565a 100%
+  );
+  box-shadow:
+    0 0 0 0.5px rgba(16, 16, 16, 0.35),
+    0 0 5px rgba(0, 0, 0, 0.22);
+  transform-origin: 50% 0;
+  will-change: height, transform;
+}
+
+.pull-chain-weight {
+  display: block;
+  transform-origin: 50% 0;
+}
+
+.pull-chain-links {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0 3px,
+    rgba(24, 24, 26, 0.85) 3px 4px,
+    transparent 4px 7px
+  );
+  opacity: 0.55;
+}
+
+.pull-chain-hit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-top: -1px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pull-chain-hit:focus-visible {
+  outline: 1px solid var(--paper);
+  outline-offset: 2px;
+}
+
+.pull-chain-handle {
+  display: block;
+  width: 13px;
+  height: 30px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #5c5d60 0%,
+    #f4f4f1 26%,
+    #ffffff 44%,
+    #b9babd 62%,
+    #4a4b4e 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    0 0 0 0.5px rgba(16, 16, 16, 0.4);
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms ease;
+}
+
+.pull-chain-hit:hover .pull-chain-handle,
+.pull-chain[data-pulling="true"] .pull-chain-handle {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 3px 9px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(16, 16, 16, 0.45);
+}
+
+.pull-chain-label {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+  white-space: nowrap;
+  padding: 5px 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--background);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--silver);
+  opacity: 0;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+  pointer-events: none;
+}
+
+.pull-chain-hit:hover .pull-chain-label,
+.pull-chain-hit:focus-visible .pull-chain-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Exposure bloom spreading from the chain when the theme changes. */
+html[data-theme-shift]::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 70;
+  width: 220vmax;
+  height: 220vmax;
+  margin: -110vmax -110vmax 0 0;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: theme-spread 480ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+html[data-theme-shift="to-light"]::after {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(242, 242, 240, 0.55) 42%,
+    rgba(242, 242, 240, 0) 68%
+  );
+}
+
+html[data-theme-shift="to-dark"]::after {
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.5) 42%,
+    rgba(0, 0, 0, 0) 68%
+  );
+}
+
+@keyframes theme-spread {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.14);
+  }
+  55% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-shift]::after {
+    display: none;
+    animation: none;
+  }
+
+  .pull-chain-cord,
+  .pull-chain-handle {
+    transition: none;
+  }
+}
+
+html[data-motion="reduced"] .pull-chain-cord,
+html[data-motion="reduced"] .pull-chain-handle {
+  transition: none;
 }

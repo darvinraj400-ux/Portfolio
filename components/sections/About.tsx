@@ -1,57 +1,71 @@
-import Reveal from "@/components/layout/Reveal";
+import SectionFrame from "@/components/layout/SectionFrame";
+import ScrambleText from "@/components/motion/ScrambleText";
 import AboutStats from "@/components/sections/AboutStats";
+import { SITE } from "@/lib/constants";
 
 export default function About() {
   return (
-    <section id="about" aria-label="About" data-palette="neutral" className="scroll-mt-14 px-6 py-24 sm:py-32">
-      <Reveal className="mx-auto w-full max-w-5xl">
-        <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
-          About
-        </h2>
-        <div data-reveal className="mt-8 flex flex-wrap items-center gap-6">
-          <span className="font-serif text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            Darvin Raj
-          </span>
-          <svg
-            width="100"
-            height="40"
-            viewBox="0 0 100 40"
-            fill="none"
-            aria-hidden="true"
-            className="shrink-0"
-          >
-            <path
-              d="M2 26 C 14 26, 18 10, 30 12 S 44 30, 56 22 S 70 6, 82 14 S 94 26, 98 20"
-              stroke="var(--accent)"
-              strokeOpacity="0.4"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
+    <SectionFrame id="about" index="01" title="About">
+      <div className="flex flex-wrap items-end justify-between gap-6 border-b border-line pb-8">
+        <div>
+          <ScrambleText
+            as="p"
+            className="mono-meta text-ash"
+            text={SITE.role}
+            level="micro"
+          />
+          <ScrambleText
+            as="h3"
+            className="mt-3 display text-4xl sm:text-5xl"
+            text={SITE.creator}
+            level="heading"
+            delay={40}
+          />
         </div>
-        <div className="mt-8 max-w-2xl space-y-6 text-lg leading-relaxed text-foreground">
-          <p data-reveal>
-            I&apos;m Darvin, and I build AI products that admit what they
-            don&apos;t know. Most demos fail the moment a user asks something
-            unexpected — so I design for that moment first: guardrails,
-            confidence thresholds, and a clean handoff to a human.
-          </p>
-          <p data-reveal>
-            My work lives at the intersection of full-stack engineering and
-            applied AI. I&apos;ve shipped a pricing copilot for kedai runcit, a
-            support widget that answers from your own FAQs, a lead qualifier
-            with a deterministic rubric, and a booking system with a race-safe
-            scheduler.
-          </p>
-          <p data-reveal>
-            I&apos;m finishing my final year of my Diploma in Information
-            Technology at Politeknik Muadzam Shah. When I&apos;m not
-            shipping, I&apos;m usually breaking my own demos on purpose to
-            find out where the guardrails should go.
-          </p>
-        </div>
-        <AboutStats />
-      </Reveal>
-    </section>
+        <ScrambleText
+          as="p"
+          className="mono-meta"
+          text={SITE.studio}
+          level="micro"
+          delay={80}
+        />
+      </div>
+
+      <div className="mt-8 max-w-2xl space-y-6 text-base leading-relaxed text-silver sm:text-lg">
+        <ScrambleText
+          as="p"
+          className="text-lg text-paper sm:text-xl"
+          text="Technology gives me the tools. Creativity gives me direction."
+          level="heading"
+          delay={60}
+        />
+        <ScrambleText
+          as="p"
+          text="I'm Darvin Raj, an independent digital creator interested in web development, artificial intelligence, digital experiences and problem-solving."
+          level="body"
+          delay={80}
+        />
+        <ScrambleText
+          as="p"
+          text="One of my strongest capabilities is using AI effectively as part of the development process. I enjoy taking an idea, breaking it into manageable parts, exploring solutions and using AI-assisted workflows to turn concepts into functional digital products."
+          level="body"
+          delay={120}
+        />
+        <ScrambleText
+          as="p"
+          text="I believe AI is most valuable when combined with human judgment, creative thinking and technical understanding. It allows me to experiment faster, work more efficiently and explore ideas that might otherwise take much longer to bring to life."
+          level="body"
+          delay={160}
+        />
+        <ScrambleText
+          as="p"
+          text="I'm always learning, building and exploring better ways to turn ideas into something real."
+          level="body"
+          delay={200}
+        />
+      </div>
+
+      <AboutStats />
+    </SectionFrame>
   );
 }

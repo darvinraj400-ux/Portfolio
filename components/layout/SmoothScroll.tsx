@@ -2,14 +2,23 @@
 
 import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { useMotionPreference } from "@/components/providers/MotionPreferenceProvider";
 import { setLenisInstance, type LenisLike } from "@/lib/scroll";
 
 /**
- * Initializes Lenis smooth scrolling on mount, tears down on unmount.
- * Returns children only.
+ * Initializes Lenis smooth scrolling only when the visitor has not asked
+ * for reduced motion. Changing the preference tears the instance down and
+ * hands scrolling back to the browser.
  */
 export default function SmoothScroll({ children }: { children: ReactNode }) {
+  const { reduced } = useMotionPreference();
+
   useEffect(() => {
+    if (reduced) {
+      setLenisInstance(null);
+      return;
+    }
+
     let raf = 0;
     let lenis: LenisLike | null = null;
     let cancelled = false;
@@ -37,7 +46,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       setLenisInstance(null);
       lenis = null;
     };
-  }, []);
+  }, [reduced]);
 
   return <>{children}</>;
 }

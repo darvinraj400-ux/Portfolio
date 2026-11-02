@@ -1,147 +1,94 @@
-import type { ComponentType } from "react";
-import { Boxes, Cloud, Database } from "lucide-react";
-import {
-  SiCss,
-  SiDocker,
-  SiExpress,
-  SiFastapi,
-  SiGit,
-  SiGithub,
-  SiGooglegemini,
-  SiHtml5,
-  SiJavascript,
-  SiLangchain,
-  SiMongodb,
-  SiNextdotjs,
-  SiOllama,
-  SiPostman,
-  SiPython,
-  SiReact,
-  SiSupabase,
-  SiTailwindcss,
-} from "react-icons/si";
-import Reveal from "@/components/layout/Reveal";
+import SectionFrame from "@/components/layout/SectionFrame";
+import ScrambleText from "@/components/motion/ScrambleText";
 
-type SkillIcon = ComponentType<{
-  size?: number | string;
-  className?: string;
-}>;
-
-type Skill = {
-  label: string;
-  Icon: SkillIcon;
-};
-
-// NOTE: react-icons/si no longer ships SiCss3 / SiAmazonaws (verified
-// against the installed version). CSS3 resolves to SiCss (the CSS
-// logo). ChromaDB, Vector Embeddings, and AWS have no brand mark in
-// react-icons — they use neutral lucide icons so the label stays
-// authoritative without misattributing a vendor.
-const ROWS: {
-  label: string;
-  skills: Skill[];
-  duration: string;
-  direction: "left" | "right";
-}[] = [
+const SKILL_GROUPS = [
   {
-    label: "Row 1",
-    direction: "left",
-    duration: "45s",
+    title: "AI & Intelligent Development",
     skills: [
-      { label: "JavaScript", Icon: SiJavascript },
-      { label: "HTML5", Icon: SiHtml5 },
-      { label: "CSS3", Icon: SiCss },
-      { label: "Python", Icon: SiPython },
-      { label: "React", Icon: SiReact },
-      { label: "Next.js", Icon: SiNextdotjs },
+      "AI-assisted development",
+      "AI coding workflows",
+      "AI integration",
+      "Prompt design and task orchestration",
     ],
   },
   {
-    label: "Row 2",
-    direction: "right",
-    duration: "55s",
+    title: "Web Development",
     skills: [
-      { label: "Tailwind CSS", Icon: SiTailwindcss },
-      { label: "Express.js", Icon: SiExpress },
-      { label: "MongoDB", Icon: SiMongodb },
-      { label: "FastAPI", Icon: SiFastapi },
-      { label: "Supabase", Icon: SiSupabase },
+      "Responsive web development",
+      "Website development",
+      "Functional web applications",
+      "Frontend implementation",
     ],
   },
   {
-    label: "Row 3",
-    direction: "left",
-    duration: "50s",
+    title: "Design & Experience",
     skills: [
-      { label: "LangChain", Icon: SiLangchain },
-      { label: "Ollama", Icon: SiOllama },
-      { label: "Gemini", Icon: SiGooglegemini },
-      { label: "ChromaDB", Icon: Database },
-      { label: "Vector Embeddings", Icon: Boxes },
+      "UI/UX design",
+      "Interface design",
+      "Responsive layouts",
+      "Digital product prototyping",
     ],
   },
   {
-    label: "Row 4",
-    direction: "right",
-    duration: "60s",
+    title: "Automation & Systems",
     skills: [
-      { label: "AWS", Icon: Cloud },
-      { label: "Git", Icon: SiGit },
-      { label: "GitHub", Icon: SiGithub },
-      { label: "Docker", Icon: SiDocker },
-      { label: "Postman", Icon: SiPostman },
+      "Workflow automation",
+      "Business-oriented web systems",
+      "Dashboard and booking system development",
+      "Digital problem-solving",
     ],
   },
-];
-
-function Pill({ label, Icon }: Skill) {
-  return (
-    <span className="inline-flex h-8 shrink-0 items-center gap-2 rounded-lg border border-border bg-card/60 px-3 text-sm text-foreground/80">
-      <Icon size={18} aria-hidden="true" />
-      {label}
-    </span>
-  );
-}
+] as const;
 
 export default function Skills() {
   return (
-    <section id="skills" aria-label="Skills" data-palette="neutral" className="scroll-mt-14 px-6 py-24 sm:py-32">
-      <Reveal className="mx-auto w-full max-w-5xl">
-        <h2 data-reveal className="text-sm font-medium tracking-widest text-muted-foreground uppercase">
-          Skills
-        </h2>
-        <div className="mt-8 space-y-3 sm:space-y-4">
-          {ROWS.map((row) => (
-            <div
-              key={row.label}
-              data-reveal
-              role="marquee"
-              aria-label={`Skills row`}
-              className="marquee overflow-hidden"
-            >
-              <div
-                className="marquee-track"
-                data-direction={row.direction}
-                style={{ animationDuration: row.duration }}
+    <SectionFrame id="skills" index="03" title="Expertise">
+      <ScrambleText
+        as="p"
+        className="max-w-xl text-2xl leading-tight tracking-tight text-paper sm:text-3xl"
+        text="Where design, development and AI-assisted workflows meet."
+        level="heading"
+      />
+
+      <div className="mt-10 grid gap-px border-t border-line bg-line sm:grid-cols-2">
+        {SKILL_GROUPS.map((group, index) => (
+          <section
+            key={group.title}
+            aria-labelledby={`skill-group-${index + 1}`}
+            className="bg-background py-7 sm:pr-8 sm:even:pr-0 sm:even:pl-8"
+          >
+            <div className="flex items-baseline justify-between gap-6 border-b border-line pb-3">
+              <h3
+                id={`skill-group-${index + 1}`}
+                className="text-base font-medium text-paper sm:text-lg"
               >
-                <div className="flex shrink-0 items-center gap-3 pr-3">
-                  {row.skills.map((skill) => (
-                    <Pill key={skill.label} {...skill} />
-                  ))}
-                </div>
-                <div
-                  className="flex shrink-0 items-center gap-3 pr-3"
-                  aria-hidden="true"
-                >
-                  {row.skills.map((skill) => (
-                    <Pill key={`loop-${skill.label}`} {...skill} />
-                  ))}
-                </div>
-              </div>
+                <ScrambleText
+                  text={group.title}
+                  level="heading"
+                  delay={40 + index * 60}
+                />
+              </h3>
+              <span aria-hidden="true" className="mono-meta text-ash">
+                {String(index + 1).padStart(2, "0")}
+              </span>
             </div>
-          ))}
-        </div>
-      </Reveal>
-    </section>
+            <ul className="mt-4 space-y-2">
+              {group.skills.map((skill, skillIndex) => (
+                <li
+                  key={skill}
+                  className="text-sm leading-relaxed text-silver before:mr-2 before:font-mono before:text-graphite before:content-['—']"
+                >
+                  <ScrambleText
+                    text={skill}
+                    level="body"
+                    delay={60 + index * 60 + skillIndex * 25}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </SectionFrame>
   );
 }

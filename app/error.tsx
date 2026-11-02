@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import ScrambleText from "@/components/motion/ScrambleText";
 
 export default function Error({
   error,
@@ -12,21 +13,46 @@ export default function Error({
   useEffect(() => {
     console.error(error);
   }, [error]);
+
   return (
-    <main className="flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center px-6 text-center">
-      <p className="text-sm text-muted-foreground">Something went wrong</p>
-      <h1 className="mt-4 font-serif text-4xl tracking-tight text-foreground">
-        This page hit its limits.
-      </h1>
-      {error.digest ? (
-        <p className="mt-4 text-sm text-muted-foreground">{error.digest}</p>
-      ) : null}
+    <main
+      id="main-content"
+      className="flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center px-6 text-center"
+    >
+      <ScrambleText
+        as="p"
+        className="mono-meta text-ash"
+        text="Something went wrong"
+        level="micro"
+        trigger="mount"
+      />
+      <ScrambleText
+        as="h1"
+        className="mt-4 display text-4xl sm:text-5xl"
+        text="This page couldn't load."
+        level="headline"
+        trigger="mount"
+        delay={40}
+      />
+      <ScrambleText
+        as="p"
+        className="mt-4 max-w-md text-sm leading-relaxed text-silver"
+        text="An unexpected error interrupted the page. Try loading it again."
+        level="body"
+        trigger="mount"
+        delay={80}
+      />
       <button
         type="button"
         onClick={reset}
-        className="mt-8 text-sm font-medium text-foreground underline-offset-4 hover:underline"
+        className="link-underline mt-8 pb-1 text-sm text-silver transition-colors hover:text-paper"
       >
-        Try again
+        <ScrambleText
+          text="Try again"
+          level="micro"
+          trigger="mount"
+          delay={120}
+        />
       </button>
     </main>
   );

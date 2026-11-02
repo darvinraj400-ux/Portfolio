@@ -1,10 +1,15 @@
 export const SITE = {
-  name: "Darvin Raj",
+  name: "DARVINN STUDIO",
+  studio: "DARVINN STUDIO",
+  creator: "Darvin Raj",
+  role: "Independent digital creator",
+  signature: "DARVIN RAJ · INDEPENDENT DIGITAL CREATOR",
   handle: "darvinn",
   domain: "https://darvinn.xyz",
-  positioning: "I build AI that knows its limits.",
+  positioning:
+    "AI-powered thinking. Creative execution. Functional digital experiences.",
   email: "darvinraj400@gmail.com",
-  github: "https://github.com/darvinraj400-ux",
+  github: "https://github.com/darvinraj400-ux/",
 } as const;
 
 export type Project = {
@@ -63,9 +68,10 @@ export const PROJECTS: Project[] = [
 ];
 
 export const NAV_LINKS = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/" },
+  { label: "Projects", href: "/projects" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
 ] as const;
 
 /** Resolved once so Featured and Products can never render the same entry. */

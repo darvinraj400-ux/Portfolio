@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ComponentPropsWithoutRef } from "react"
 import { useInView, useMotionValue, useSpring } from "motion/react"
 
+import { useMotionPreference } from "@/components/providers/MotionPreferenceProvider"
 import { cn } from "@/lib/utils"
 
 interface NumberTickerProps extends ComponentPropsWithoutRef<"span"> {
@@ -13,7 +14,19 @@ interface NumberTickerProps extends ComponentPropsWithoutRef<"span"> {
   decimalPlaces?: number
 }
 
-export function NumberTicker({
+const BASE_CLASS =
+  // Callers supply the text color; tailwind-merge cannot reliably
+  // collapse a registry color against the project's tokens.
+  "inline-block tracking-wider tabular-nums"
+
+function format(value: number, decimalPlaces: number) {
+  return Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+  }).format(Number(value.toFixed(decimalPlaces)))
+}
+
+function AnimatedTicker({
   value,
   startValue = 0,
   direction = "up",
@@ -50,29 +63,35 @@ export function NumberTicker({
     () =>
       springValue.on("change", (latest) => {
         if (ref.current) {
-          ref.current.textContent = Intl.NumberFormat("en-US", {
-            minimumFractionDigits: decimalPlaces,
-            maximumFractionDigits: decimalPlaces,
-          }).format(Number(latest.toFixed(decimalPlaces)))
+          ref.current.textContent = format(Number(latest), decimalPlaces)
         }
       }),
     [springValue, decimalPlaces]
   )
 
   return (
-    <span
-      ref={ref}
-      className={cn(
-        // NOTE: intentionally no color defaults — callers supply the text
-        // color via className. tailwind-merge can't reliably collapse
-        // registry `text-black` against project tokens like
-        // `text-foreground`, which would leave color to cascade order.
-        "inline-block tracking-wider tabular-nums",
-        className
-      )}
-      {...props}
-    >
+    <span ref={ref} className={cn(BASE_CLASS, className)} {...props}>
       {startValue}
     </span>
   )
+}
+
+export function NumberTicker(props: NumberTickerProps) {
+  const { reduced } = useMotionPreference()
+
+  if (reduced) {
+    const { value, className, decimalPlaces = 0, ...rest } = props
+    // Strip animation-only props so they are not forwarded to the DOM.
+    delete rest.startValue
+    delete rest.direction
+    delete rest.delay
+
+    return (
+      <span className={cn(BASE_CLASS, className)} {...rest}>
+        {format(value, decimalPlaces)}
+      </span>
+    )
+  }
+
+  return <AnimatedTicker {...props} />
 }
