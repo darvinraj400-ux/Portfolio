@@ -9,6 +9,7 @@ export type VortexProject = {
   titleLines: string[];
   category: string;
   shortDescription?: string;
+  cover?: string;
 };
 
 export type VortexInventoryEntry = {

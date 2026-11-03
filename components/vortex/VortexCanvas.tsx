@@ -8,6 +8,7 @@ import InspectorLight, {
 } from "@/components/three/InspectorLight";
 import StudioEnvironment from "@/components/three/StudioEnvironment";
 import { reportCardHover } from "@/lib/cursor-signal";
+import { trace } from "@/lib/diag-trace";
 import { VortexWorld } from "@/lib/vortex-physics";
 import type { Theme } from "@/lib/theme";
 import type { VortexEnvironment } from "@/lib/vortex-config";
@@ -137,6 +138,7 @@ function ContextGuard({ onError }: { onError: () => void }) {
     const element = gl.domElement;
     const handleLost = (event: Event) => {
       event.preventDefault();
+      trace("gl:context-lost");
       onError();
     };
     element.addEventListener("webglcontextlost", handleLost);
@@ -156,6 +158,7 @@ function ReadySignal({ onReady }: { onReady: () => void }) {
       second = requestAnimationFrame(() => {
         if (sent.current) return;
         sent.current = true;
+        trace("canvas:ready-signal");
         onReady();
       });
     });
@@ -364,6 +367,7 @@ export default function VortexCanvas({
     let instance: VortexWorld | null = null;
     setWorld(null);
     const saved = loadVortexScene();
+    trace("world:create-start");
 
     VortexWorld.create(projects, environment, reducedRef.current)
       .then((created) => {
@@ -379,9 +383,11 @@ export default function VortexCanvas({
           created.restoreState(saved.world);
         }
         instance = created;
+        trace("world:create-ok");
         setWorld(created);
       })
-      .catch(() => {
+      .catch((error) => {
+        trace("world:create-error", error);
         if (mounted) handleError();
       });
 
@@ -402,6 +408,7 @@ export default function VortexCanvas({
   useEffect(() => {
     let cancelled = false;
     setAtlas(null);
+    trace("atlas:build-start");
 
     buildVortexAtlas(
       projects.map((project) => ({
@@ -420,9 +427,11 @@ export default function VortexCanvas({
           next.texture.dispose();
           return;
         }
+        trace("atlas:build-ok");
         setAtlas(next);
       })
-      .catch(() => {
+      .catch((error) => {
+        trace("atlas:build-error", error);
         if (!cancelled) handleError();
       });
 
@@ -465,6 +474,10 @@ export default function VortexCanvas({
         far: environment.camera.far,
       }}
       onCreated={({ gl }) => {
+        trace(
+          "gl:created",
+          `webgl2=${gl.capabilities.isWebGL2} maxTex=${gl.capabilities.maxTextureSize}`,
+        );
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = SCENE_EXPOSURE;
         gl.setClearAlpha(0);

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { SoundProvider } from "@/components/audio/SoundProvider";
+import DeviceDiag from "@/components/debug/DeviceDiag";
 import Nav from "@/components/layout/Nav";
 import PullChain from "@/components/layout/PullChain";
 import SmoothScroll from "@/components/layout/SmoothScroll";
@@ -65,6 +66,7 @@ export default function RootLayout({
       className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <head>
+        <DeviceDiag />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
       </head>
       <body className="min-h-full bg-background font-sans">

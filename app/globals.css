@@ -448,6 +448,26 @@ html[data-theme="light"] {
   }
 }
 
+/* Selected-project panel content: each item fades in after a selection swap. */
+@keyframes vortex-panel-item-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.vortex-panel-item {
+  animation: vortex-panel-item-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vortex-panel-item {
+    animation: none;
+  }
+}
+
 /* One orchestrated entrance for the opening frame, CSS only. */
 @keyframes hero-rise {
   from {

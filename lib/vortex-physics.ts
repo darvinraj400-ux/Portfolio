@@ -18,6 +18,7 @@ import {
   sampleAir,
   vortexRadiusAt,
 } from "./vortex-forces";
+import { trace } from "./diag-trace";
 import type {
   Vec3Tuple,
   VortexCollisionSnapshot,
@@ -70,12 +71,16 @@ let rapierLoader: Promise<RapierApi> | null = null;
 
 function loadRapier(): Promise<RapierApi> {
   if (!rapierLoader) {
+    trace("rapier:import-start");
     rapierLoader = import("@dimforge/rapier3d-compat")
       .then(async (rapier) => {
+        trace("rapier:import-ok");
         await rapier.init();
+        trace("rapier:init-ok");
         return rapier;
       })
       .catch((error) => {
+        trace("rapier:error", error);
         rapierLoader = null;
         throw error;
       });

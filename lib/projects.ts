@@ -139,7 +139,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A soft visual theme built around gentle colour, calm layouts and quiet typography.",
+      "A pastel workshop-studio concept pairing illustrated class cards and category filters with a warm editorial layout.",
     description:
       "A visual theme exploration demonstrating soft colour theory, gentle typography and calm layouts.",
     highlights: ["Soft colour theory", "Gentle typography", "Calm layouts"],
@@ -165,7 +165,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A restrained, high-end theme led by serif display type, premium spacing and quiet detailing.",
+      "A luxury barbershop concept combining serif display type, warm editorial photography and an appointment-led layout.",
     description:
       "A visual theme exploration demonstrating premium spacing, serif display typography, restrained palettes and high-end presentation.",
     highlights: [
@@ -196,7 +196,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "An uncompromising theme of raw layouts, heavy borders and anti-decoration.",
+      "An uncompromising studio site built on oversized type, hard borders and acid-yellow accents across alternating light and dark sections.",
     description:
       "A visual theme exploration demonstrating raw layouts, heavy borders, uncompromising typography and anti-decoration.",
     highlights: [
@@ -227,7 +227,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A high-energy theme built from bold colour blocking, rounded shapes and motion.",
+      "A playful design-studio site led by pastel colour blocks, rounded illustrations and upbeat, conversational copy.",
     description:
       "A visual theme exploration demonstrating bold colour blocking, rounded shapes and energetic motion.",
     highlights: ["Bold colour blocking", "Rounded shapes", "Energetic motion"],
@@ -253,7 +253,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "An organic theme pairing botanical imagery with earthy type and natural palettes.",
+      "A nature-led sustainability journal with immersive forest photography, a field-guide article index and a calm green palette.",
     description:
       "A visual theme exploration demonstrating organic palettes, botanical imagery and earthy typography.",
     highlights: ["Organic palettes", "Botanical imagery", "Earthy typography"],
@@ -279,7 +279,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A conservative, trust-oriented theme built on structured grids and clear hierarchy.",
+      "A corporate consulting site pairing structured grids and restrained navy accents with a clarity-first content hierarchy.",
     description:
       "A visual theme exploration demonstrating structured grids, trust-building hierarchy and conservative palettes.",
     highlights: [
@@ -309,7 +309,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A layered theme exploring frosted glass, blur and translucency.",
+      "A glassmorphic SaaS dashboard built from translucent layered panels, soft violet accents and dense analytics modules.",
     description:
       "A visual theme exploration demonstrating frosted glass surfaces, blur and layered translucency.",
     highlights: [
@@ -339,7 +339,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A period-inspired theme with vintage typography and nostalgic palettes.",
+      "A nostalgic homeware shop with vintage display type, a warm cream-and-red palette and a browsable product catalogue.",
     description:
       "A visual theme exploration demonstrating vintage typography, nostalgic palettes and period styling.",
     highlights: ["Vintage typography", "Nostalgic palettes", "Period styling"],
@@ -347,7 +347,7 @@ export const PROJECTS: Project[] = [
     role: [],
     technologies: [],
     outcomes: [],
-    liveUrl: "https://retro-theme-demo.vercel.app/",
+    liveUrl: "https://retro-theme.vercel.app/",
     repoUrl: null,
     caseStudyUrl: null,
     figmaUrl: null,
@@ -365,7 +365,7 @@ export const PROJECTS: Project[] = [
     projectType: "Interactive experience",
     status: "live-website-demo",
     shortDescription:
-      "A 3D space-themed interactive experience built around an orbital planet system and an immersive narrative.",
+      "An immersive 3D planet-system experience with orbital navigation and an explorable cosmic archive.",
     description:
       "Aether Cosmos is a 3D space-themed interactive experience demonstrating orbital motion and an immersive narrative.",
     highlights: [
@@ -395,7 +395,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A reduced theme built on whitespace discipline and essential typography.",
+      "A minimal architecture studio site pairing disciplined typography and generous whitespace with monochrome building photography.",
     description:
       "A visual theme exploration demonstrating whitespace discipline, essential typography and visual reduction.",
     highlights: [
@@ -425,7 +425,7 @@ export const PROJECTS: Project[] = [
     projectType: "Industry-specific website",
     status: "live-website-demo",
     shortDescription:
-      "A botanical brand site demonstrating plant product branding and catalogue UX.",
+      "A botanical commerce concept with soft-green plant illustrations, a curated catalogue and a natural-light product guide.",
     description:
       "An industry-specific website demonstrating botanical product branding and plant catalogue UX.",
     highlights: ["Botanical product branding", "Plant catalogue UX"],
@@ -451,7 +451,7 @@ export const PROJECTS: Project[] = [
     projectType: "Brand and business website",
     status: "live-website-demo",
     shortDescription:
-      "A premium real-estate brand site built around property listings and trust signals.",
+      "A premium real-estate site built around filterable property listings, local expertise cues and trust-focused detail.",
     description:
       "A brand and business website demonstrating property listing UX, trust signals and premium real-estate branding.",
     highlights: [
@@ -481,7 +481,7 @@ export const PROJECTS: Project[] = [
     projectType: "Interactive experience",
     status: "live-website-demo",
     shortDescription:
-      "A high-energy gym experience covering brand, programme discovery and interaction.",
+      "A dark training dashboard concept with weekly progress tracking, a scheduled programme and a daily workout entry point.",
     description:
       "An interactive experience demonstrating gym branding, high-energy interaction and programme discovery.",
     specialInstruction:
@@ -513,7 +513,7 @@ export const PROJECTS: Project[] = [
     projectType: "Digital product / learning platform",
     status: "live-website-demo",
     shortDescription:
-      "A learning platform concept built around course discovery and educational information architecture.",
+      "A learning-platform concept with searchable course discovery, category filters and instructor-led course cards.",
     description:
       "A learning-platform concept demonstrating course discovery, learning-platform UX and educational information architecture.",
     highlights: [
@@ -543,7 +543,7 @@ export const PROJECTS: Project[] = [
     projectType: "Brand and business website",
     status: "live-website-demo",
     shortDescription:
-      "A luxury fashion editorial concept built on typographic luxury and high-end commerce.",
+      "A monochrome fashion editorial built around collection storytelling, lookbook photography and understated luxury.",
     description:
       "A luxury fashion editorial concept demonstrating editorial fashion branding, high-end commerce and typographic luxury.",
     highlights: [
@@ -573,7 +573,7 @@ export const PROJECTS: Project[] = [
     projectType: "Interactive experience",
     status: "live-website-demo",
     shortDescription:
-      "An interactive travel discovery experience with maps, itineraries and explorative layouts.",
+      "A travel-discovery concept centred on regional browsing, illustrated destination cards and itinerary prompts.",
     description:
       "An interactive travel discovery experience demonstrating travel discovery UX, interactive maps, itineraries and explorative layouts.",
     highlights: [
@@ -604,7 +604,7 @@ export const PROJECTS: Project[] = [
     projectType: "Digital product",
     status: "live-website-demo",
     shortDescription:
-      "A SaaS analytics dashboard exploring data visualisation and dashboard information architecture.",
+      "A SaaS analytics dashboard covering revenue, active users, growth and retention through charts, feeds and quick stats.",
     description:
       "A SaaS analytics dashboard concept demonstrating data visualisation, dashboard information architecture and product UX.",
     highlights: [
@@ -634,7 +634,7 @@ export const PROJECTS: Project[] = [
     projectType: "Creative portfolio",
     status: "live-website-demo",
     shortDescription:
-      "A motion-led personal portfolio with case-study layouts and personal branding.",
+      "A multidisciplinary designer portfolio with indexed navigation, a project archive and confident editorial typography.",
     description:
       "A creative portfolio demonstrating personal branding, case-study layouts and motion-led presentation.",
     specialInstruction:
@@ -666,7 +666,7 @@ export const PROJECTS: Project[] = [
     projectType: "Digital product / e-commerce",
     status: "live-website-demo",
     shortDescription:
-      "A premium e-commerce demonstration built around product catalogues, checkout and retail branding.",
+      "A premium homeware store pairing warm product photography with a soft neutral palette and considered-living copy.",
     description:
       "A premium e-commerce concept demonstrating product catalogues, checkout UX and retail branding.",
     highlights: [
@@ -696,7 +696,7 @@ export const PROJECTS: Project[] = [
     projectType: "Brand and business website",
     status: "live-website-demo",
     shortDescription:
-      "A warm restaurant and hospitality brand site with a menu-led layout.",
+      "A warm restaurant site with full-bleed food photography, a detailed menu and reservation prompts.",
     description:
       "A brand and business website demonstrating warm restaurant and hospitality branding with a menu-led layout.",
     highlights: [
@@ -726,7 +726,7 @@ export const PROJECTS: Project[] = [
     projectType: "Brand and business website",
     status: "live-website-demo",
     shortDescription:
-      "A warm café brand site demonstrating local-business UX and café identity.",
+      "A specialty coffee brand site pairing rich brown tones with menu highlights, brand stats and story-led sections.",
     description:
       "A brand and business website demonstrating café branding, warm palettes and local-business UX.",
     highlights: ["Café branding", "Warm palettes", "Local-business UX"],
@@ -752,7 +752,7 @@ export const PROJECTS: Project[] = [
     projectType: "Visual theme exploration",
     status: "live-website-demo",
     shortDescription:
-      "A speculative interface theme of sci-fi surfaces, glow and advanced motion.",
+      "A speculative deep-tech landing experience with a faceted geometric visual, glow accents and immersive-lab framing.",
     description:
       "A visual theme exploration demonstrating sci-fi interfaces, glow, advanced motion and speculative interface design.",
     highlights: [
@@ -783,7 +783,7 @@ export const PROJECTS: Project[] = [
     projectType: "Mobile app design concept",
     status: "mobile-ui-concept",
     shortDescription:
-      "Your daily ritual, brewed better — a specialty coffee ordering and loyalty app concept.",
+      "A warm specialty-coffee ordering concept with order-ahead cards, a curated menu and a loyalty-led home screen.",
     description:
       "A mobile UI design concept for specialty coffee ordering and loyalty. DailyDrip pairs a warm, refined, artisanal and contemporary personality with a premium editorial café aesthetic across five specified screens.",
     statusNote:
@@ -852,7 +852,7 @@ export const PROJECTS: Project[] = [
     projectType: "Mobile app design concept",
     status: "mobile-ui-concept",
     shortDescription:
-      "Train with purpose — a dark-mode fitness tracking and workout analytics app concept.",
+      "A dark fitness-tracking concept with weekly targets, workout discovery and a live session timer.",
     description:
       "A mobile UI design concept for fitness, workout tracking and activity analytics. PULSE uses a bold, futuristic, disciplined and technical dark-mode visual language across five specified screens.",
     statusNote:
@@ -919,7 +919,7 @@ export const PROJECTS: Project[] = [
     projectType: "Mobile app design concept",
     status: "mobile-ui-concept",
     shortDescription:
-      "Good food, good mood — a playful local food discovery, ordering and delivery app concept.",
+      "A playful food-discovery and delivery concept with restaurant categories, dish cards and a running cart.",
     description:
       "A mobile UI design concept for food discovery, restaurants, ordering and delivery. MakanMate combines a playful, friendly, contemporary and local personality with playful modern food branding across five specified screens.",
     statusNote:
@@ -993,7 +993,7 @@ export const PROJECTS: Project[] = [
     projectType: "Mobile app design concept",
     status: "mobile-ui-concept",
     shortDescription:
-      "A little care, every day — a minimal botanical skincare and routine app concept.",
+      "A minimal botanical skincare concept with gentle product discovery, ingredient-led detail and a soft natural palette.",
     description:
       "A mobile UI design concept for skincare, beauty e-commerce and routine management. Dewdrop uses a natural, gentle, elegant and refined minimal botanical beauty editorial style across five specified screens.",
     statusNote:
@@ -1066,7 +1066,7 @@ export const PROJECTS: Project[] = [
     projectType: "Mobile app design concept",
     status: "mobile-ui-concept",
     shortDescription:
-      "Make money feel manageable — a friendly budgeting, expenses and savings app concept.",
+      "A friendly personal-finance concept with balance cards, spending breakdowns, budgets and transaction activity.",
     description:
       "A mobile UI design concept for personal finance, expense tracking, budgeting and savings. PocketPal uses a friendly, modern, trustworthy and intelligent modern-minimal fintech style across five specified screens.",
     statusNote:
@@ -1140,7 +1140,7 @@ export const PROJECTS: Project[] = [
     projectType: "AI invoice-processing platform",
     status: "development-in-progress",
     shortDescription:
-      "Invoice processing, minus the paperwork — a review-oriented AI extraction platform.",
+      "An invoice-processing platform pairing AI extraction with human review, duplicate detection and account-scoped records.",
     description:
       "DocuFlow AI is an invoice-processing platform with private document uploads, account-scoped records, duplicate detection, human approval and a pluggable AI extraction architecture.",
     statusNote:
@@ -1187,7 +1187,7 @@ export const PROJECTS: Project[] = [
     projectType: "AI lead qualification and routing",
     status: "live-functional-demonstration",
     shortDescription:
-      "Inbound that routes itself — the AI classifies, and code scores deterministically.",
+      "An AI lead-qualification demo where the model classifies inbound leads and deterministic scoring ranks them.",
     description:
       "LeadFlow is an AI lead qualification and routing demonstration. The model returns discrete categories from a closed enum, and a deterministic scoring rubric maps those categories to a 0–100 score. Relay is the fictional CRM product associated with the demonstration.",
     statusNote:
@@ -1240,7 +1240,7 @@ export const PROJECTS: Project[] = [
     projectType: "FAQ chat widget with RAG and human handoff",
     status: "live-demo",
     shortDescription:
-      "A support assistant that answers only from company FAQs and admits when it does not know.",
+      "A RAG-based FAQ support assistant that answers from company content and hands off when it cannot.",
     description:
       "SupportAI is a FAQ chat widget using retrieval-augmented generation and human handoff. It answers only from a company's FAQs and admits ignorance through an explicit tool call rather than relying on a similarity threshold alone. Nimbus Analytics is the public product identity used for the demonstration.",
     statusNote:
@@ -1298,7 +1298,7 @@ export const PROJECTS: Project[] = [
     projectType: "Appointment management for service businesses",
     status: "live-demo",
     shortDescription:
-      "Appointment management where booking correctness is enforced below the interface.",
+      "Appointment management for service businesses covering staff scheduling, calendars and timezone-aware booking.",
     description:
       "SlotWise is appointment management for service businesses, covering staff scheduling, appointment calendars, customer and service management, and business timezone handling.",
     engineeringThesis:
@@ -1339,7 +1339,7 @@ export const PROJECTS: Project[] = [
     projectType: "Inventory management for small businesses",
     status: "live-demo",
     shortDescription:
-      "Inventory management built on an auditable stock-movement ledger.",
+      "Inventory management covering stock-in, stock-out, adjustments, an auditable movement ledger and low-stock reporting.",
     description:
       "StockPilot is inventory management for small businesses, covering product catalogues, supplier management, stock-in, stock-out and adjustments, auditable inventory movement history and low-stock reporting.",
     engineeringThesis:
@@ -1381,7 +1381,7 @@ export const PROJECTS: Project[] = [
     projectType: "Multi-barber booking platform",
     status: "live-demo",
     shortDescription:
-      "A multi-barber booking platform where AI parses natural language and the database enforces race safety.",
+      "A multi-barber booking platform combining a four-step wizard, natural-language booking and calendar export.",
     description:
       "Fade & Co. is a multi-barber booking platform with natural-language booking, a four-step booking wizard and calendar export. Overlapping appointments for the same barber cannot both commit.",
     statusNote: "Live demo with documented gaps.",

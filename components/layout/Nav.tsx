@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import SoundControl from "@/components/audio/SoundControl";
 import ScrambleText from "@/components/motion/ScrambleText";
 import { NAV_LINKS, SITE } from "@/lib/constants";
-import { scrollToId } from "@/lib/scroll";
+import { getLenisInstance, scrollToId } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 
 type ActiveKey = "home" | "projects" | "about" | "contact";
@@ -36,6 +36,7 @@ export default function Nav({ projectCount }: { projectCount: number }) {
   const [section, setSection] = useState<ActiveKey | null>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const pendingSection = useRef<string | null>(null);
 
   const active: ActiveKey | null =
     pathname.startsWith("/projects") || pathname.startsWith("/work")
@@ -85,6 +86,15 @@ export default function Nav({ projectCount }: { projectCount: number }) {
   }, [pathname]);
 
   useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px)");
+    const onChange = () => {
+      if (query.matches) setOpen(false);
+    };
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -113,12 +123,31 @@ export default function Nav({ projectCount }: { projectCount: number }) {
     document.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
+    const lenis = getLenisInstance();
+    lenis?.stop?.();
     panelRef.current?.querySelector<HTMLElement>("a[href]")?.focus();
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.documentElement.style.overflow = previousOverflow;
+      lenis?.start?.();
+      // The menu held the scroll lock, so a link's scroll request is replayed
+      // here after the document is released; scrolling earlier is dropped.
+      if (pendingSection.current) {
+        const target = pendingSection.current;
+        pendingSection.current = null;
+        scrollToId(target);
+      }
     };
   }, [open]);
+
+  const navigateToSection = (target: string) => {
+    if (!open) {
+      scrollToId(target);
+      return;
+    }
+    pendingSection.current = target;
+    setOpen(false);
+  };
 
   const resolveHref = (href: string) =>
     isHome && href.startsWith("/#") ? href.slice(1) : href;
@@ -140,8 +169,7 @@ export default function Nav({ projectCount }: { projectCount: number }) {
 
     if (href === "/") {
       event.preventDefault();
-      setOpen(false);
-      scrollToId("#top");
+      navigateToSection("#top");
       window.history.replaceState(null, "", "/");
       return;
     }
@@ -150,8 +178,7 @@ export default function Nav({ projectCount }: { projectCount: number }) {
       const id = `#${href.slice(2)}`;
       if (!document.getElementById(id.slice(1))) return;
       event.preventDefault();
-      setOpen(false);
-      scrollToId(id);
+      navigateToSection(id);
       window.history.replaceState(null, "", id);
     }
   };
@@ -254,7 +281,8 @@ export default function Nav({ projectCount }: { projectCount: number }) {
         <div
           id="mobile-menu"
           ref={panelRef}
-          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto border-t border-line bg-background md:hidden"
+          data-lenis-prevent
+          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain border-t border-line bg-background md:hidden"
         >
           <nav
             aria-label="Mobile"

@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Component,
@@ -14,11 +15,14 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
+import { X } from "lucide-react";
+import ProjectPlate from "@/components/archive/ProjectPlate";
 import { useMotionPreference } from "@/components/providers/MotionPreferenceProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useSound } from "@/components/audio/SoundProvider";
 import ScrambleText from "@/components/motion/ScrambleText";
 import { SITE } from "@/lib/constants";
+import { trace } from "@/lib/diag-trace";
 import { getVortexEnvironment } from "@/lib/vortex-config";
 import { createVortexScrollModel } from "@/lib/vortex-scroll";
 import { loadVortexScene } from "@/lib/vortex-state";
@@ -61,7 +65,8 @@ class SceneBoundary extends Component<
     return { failed: true };
   }
 
-  componentDidCatch() {
+  componentDidCatch(error: Error) {
+    trace("scene-boundary", error);
     this.props.onError();
   }
 
@@ -288,9 +293,8 @@ function FallbackSceneFull({
       aria-hidden="true"
     >
       <div
-        data-lenis-prevent
         className={cn(
-          "absolute inset-x-0 overflow-y-auto overscroll-contain",
+          "absolute inset-x-0 overflow-hidden",
           home
             ? "bottom-[9rem] top-[24rem] sm:bottom-[8rem] lg:top-[23rem]"
             : "bottom-[9rem] top-[10.5rem] sm:top-[10rem]",
@@ -325,6 +329,87 @@ function FallbackSceneFull({
   );
 }
 
+function StaticCover({ project }: { project: VortexProject }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!project.cover || failed) return <ProjectPlate id={project.index} />;
+
+  return (
+    <Image
+      src={project.cover}
+      alt={`${project.name} — ${project.category}`}
+      fill
+      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+      className="object-cover"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+function StaticProjectBrowser({
+  projects,
+  home,
+}: {
+  projects: VortexProject[];
+  home: boolean;
+}) {
+  return (
+    <div
+      data-vortex-static=""
+      className={cn(
+        "relative z-10 pb-16 pt-8 sm:pt-10",
+        home ? "shell" : "mx-auto w-full max-w-5xl px-4 sm:px-6",
+      )}
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-3">
+        <p className="mono-meta text-ash">Selected work / static preview</p>
+        <p className="mono-meta text-ash">
+          {String(projects.length).padStart(2, "0")} projects
+        </p>
+      </div>
+      <p className="mt-4 max-w-xl text-[13px] leading-relaxed text-silver">
+        This browser cannot render the interactive field, so the archive is
+        shown instead. Every project remains available here and in the project
+        index.
+      </p>
+
+      <ul className="mt-8 grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <li key={project.slug}>
+            <article
+              data-project-slug={project.slug}
+              className="group relative flex flex-col"
+            >
+              <Link
+                href={`/work/${project.slug}`}
+                aria-label={`${project.index}, ${project.name}, ${project.category} — open project page`}
+                className="absolute inset-0 z-10"
+              />
+              <div className="relative aspect-[4/3] overflow-hidden border border-line bg-surface transition-colors duration-300 group-hover:border-line-strong">
+                <StaticCover project={project} />
+              </div>
+              <div className="mt-3 flex items-baseline justify-between gap-4">
+                <span className="mono-meta text-ash">{project.index}</span>
+                <span className="mono-meta text-right text-ash">
+                  {project.category}
+                </span>
+              </div>
+              <h3 className="mt-2 text-base font-medium tracking-tight text-paper sm:text-lg">
+                {project.name}
+              </h3>
+              {project.shortDescription ? (
+                <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-silver">
+                  {project.shortDescription}
+                </p>
+              ) : null}
+            </article>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function VortexStage({
   projects,
   variant = "prototype",
@@ -352,10 +437,14 @@ export default function VortexStage({
   const headingId = useId();
   const instructionsId = useId();
   const indexId = useId();
+  const panelTitleId = useId();
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [indexOpen, setIndexOpen] = useState(false);
   const [announcement, setAnnouncement] = useState("");
+  const [panelProject, setPanelProject] = useState<VortexProject | null>(null);
+  const [panelShown, setPanelShown] = useState(false);
+  const [failedCover, setFailedCover] = useState<string | null>(null);
   const [webglStatus, setWebglStatus] = useState<WebGLStatus>("checking");
   const [queryReady, setQueryReady] = useState(false);
   const [forcedFallback, setForcedFallback] = useState(false);
@@ -366,6 +455,9 @@ export default function VortexStage({
   const [documentVisible, setDocumentVisible] = useState(true);
 
   const stageRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+  const panelTimerRef = useRef<number | null>(null);
+  const indexToggleRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<VortexInput>({
     scrollImpulse: 0,
     scrollDirection: 1,
@@ -387,7 +479,11 @@ export default function VortexStage({
     !sceneFailed;
   const showingScene = sceneActive && sceneReady;
   const active = visible && documentVisible && sceneActive;
-  const showFallback = !showingScene;
+  const permanentFallback =
+    queryReady && (forcedFallback || webglStatus === "unavailable" || sceneFailed);
+  // The contact sheet is only the boot placeholder; permanent fallback uses
+  // the readable archive below the hero.
+  const showBootFallback = !showingScene && !permanentFallback;
   const activeRef = useRef(active);
   activeRef.current = active;
 
@@ -421,6 +517,65 @@ export default function VortexStage({
   );
 
   useEffect(() => {
+    const target = selectedProject;
+    if (panelProject && target?.slug === panelProject.slug) {
+      if (panelTimerRef.current !== null) {
+        window.clearTimeout(panelTimerRef.current);
+        panelTimerRef.current = null;
+        setPanelShown(true);
+      }
+      return;
+    }
+    if (panelTimerRef.current !== null) {
+      window.clearTimeout(panelTimerRef.current);
+      panelTimerRef.current = null;
+    }
+    if (!panelProject) {
+      if (target) setPanelProject(target);
+      return;
+    }
+    setPanelShown(false);
+    panelTimerRef.current = window.setTimeout(
+      () => {
+        panelTimerRef.current = null;
+        setPanelProject(target);
+      },
+      reduced ? 0 : 220,
+    );
+  }, [panelProject, reduced, selectedProject]);
+
+  useEffect(() => {
+    if (
+      !panelProject ||
+      !selectedProject ||
+      selectedProject.slug !== panelProject.slug
+    ) {
+      return;
+    }
+    if (panelShown) return;
+    const frame = requestAnimationFrame(() => setPanelShown(true));
+    return () => cancelAnimationFrame(frame);
+  }, [panelProject, panelShown, selectedProject]);
+
+  useEffect(
+    () => () => {
+      if (panelTimerRef.current !== null) {
+        window.clearTimeout(panelTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  const closePanel = () => {
+    const hadFocus =
+      panelRef.current?.contains(document.activeElement) ?? false;
+    handleSelect(null);
+    if (hadFocus) {
+      requestAnimationFrame(() => indexToggleRef.current?.focus());
+    }
+  };
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setForcedFallback(
       params.get("webgl") === "off" || params.get("fallback") === "1",
@@ -449,15 +604,25 @@ export default function VortexStage({
   useEffect(() => {
     if (!queryReady) return;
     if (forcedFallback) {
+      trace("webgl:probe", "forced");
       setWebglStatus("unavailable");
       return;
     }
-    setWebglStatus(supportsWebGL() ? "available" : "unavailable");
+    const available = supportsWebGL();
+    trace("webgl:probe", available ? "available" : "unavailable");
+    setWebglStatus(available ? "available" : "unavailable");
   }, [forcedFallback, queryReady]);
 
   useEffect(() => {
     setSceneReady(false);
   }, [environment.id]);
+
+  // In the static archive the index is the only way in, so reveal the panel
+  // instead of leaving the index covering it.
+  useEffect(() => {
+    if (!permanentFallback || selectedIndex === null) return;
+    setIndexOpen(false);
+  }, [permanentFallback, selectedIndex]);
 
   useEffect(() => {
     const element = stageRef.current;
@@ -563,9 +728,14 @@ export default function VortexStage({
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (selectedRef.current === null) return;
+      const insidePanel =
+        panelRef.current?.contains(document.activeElement) ?? false;
       event.preventDefault();
       setSelectedIndex(null);
       setAnnouncement("Selection cleared.");
+      if (insidePanel) {
+        requestAnimationFrame(() => indexToggleRef.current?.focus());
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -576,10 +746,12 @@ export default function VortexStage({
   }, [active]);
 
   const handleSceneReady = useCallback(() => {
+    trace("stage:scene-ready");
     setSceneReady(true);
   }, []);
 
   const handleSceneError = useCallback(() => {
+    trace("stage:scene-error");
     setSceneFailed(true);
   }, []);
 
@@ -637,6 +809,8 @@ export default function VortexStage({
           ? "Active"
           : "Preparing";
 
+  const panelOpen = panelShown && !indexOpen;
+
   return (
     <section
       id={home ? "top" : undefined}
@@ -646,28 +820,40 @@ export default function VortexStage({
       <div
         className={cn(
           "relative",
-          home ? "h-[190svh] lg:h-[220svh]" : "h-[220svh] lg:h-[280svh]",
+          permanentFallback
+            ? ""
+            : home
+              ? "h-[190svh] lg:h-[220svh]"
+              : "h-[220svh] lg:h-[280svh]",
         )}
       >
         <div
           ref={stageRef}
           data-render={showingScene ? "webgl" : "fallback"}
+          data-static={permanentFallback ? "true" : undefined}
           data-profile={profile}
           data-population={projects.length}
           data-reduced={reduced ? "true" : "false"}
           data-selected={selectedIndex ?? "none"}
-          className="sticky top-16 flex h-[calc(100svh-4rem)] flex-col overflow-hidden bg-background"
+          className={cn(
+            "flex flex-col bg-background",
+            permanentFallback
+              ? "relative min-h-[calc(100svh-4rem)]"
+              : "sticky top-16 h-[calc(100svh-4rem)] overflow-hidden",
+          )}
           onPointerMoveCapture={handlePointerMove}
           onPointerLeave={resetPointer}
         >
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(78% 64% at 50% 42%, var(--vortex-core) 0%, var(--vortex-mid) 58%, var(--vortex-edge) 100%)",
-            }}
-          />
+          {permanentFallback ? null : (
+            <div
+              aria-hidden="true"
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(78% 64% at 50% 42%, var(--vortex-core) 0%, var(--vortex-mid) 58%, var(--vortex-edge) 100%)",
+              }}
+            />
+          )}
 
           <div
             aria-hidden="true"
@@ -696,7 +882,7 @@ export default function VortexStage({
             ) : null}
           </div>
 
-          {showFallback ? (
+          {showBootFallback ? (
             full ? (
               <FallbackSceneFull
                 projects={projects}
@@ -712,7 +898,7 @@ export default function VortexStage({
             )
           ) : null}
 
-          {reduced ? (
+          {reduced && !permanentFallback ? (
             <div
               aria-hidden="true"
               className={cn(
@@ -725,7 +911,14 @@ export default function VortexStage({
           ) : null}
 
           {home ? (
-            <div className="hero-plate pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-background via-background/88 to-transparent pb-14 sm:pb-20">
+            <div
+              className={cn(
+                "hero-plate pointer-events-none z-20 bg-gradient-to-b from-background via-background/88 to-transparent pb-14 sm:pb-20",
+                permanentFallback
+                  ? "relative"
+                  : "absolute inset-x-0 top-0",
+              )}
+            >
               <div className="shell pt-4 sm:pt-5">
                 <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-line/80 pb-3 sm:mt-0">
                   <ScrambleText
@@ -797,9 +990,11 @@ export default function VortexStage({
                       delay={180}
                     />
                     <p id={instructionsId} className="sr-only">
-                      {reduced
-                        ? "Reduced motion is on. Choose a project from the index to inspect it."
-                        : "Scroll to move through the field, or choose a project from the index to inspect it."}
+                      {permanentFallback
+                        ? "WebGL is unavailable. Every project is listed in the static archive below and in the project index."
+                        : reduced
+                          ? "Reduced motion is on. Choose a project from the index to inspect it."
+                          : "Scroll to move through the field, or choose a project from the index to inspect it."}
                     </p>
                     <div className="pointer-events-auto mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
                       <Link
@@ -867,7 +1062,10 @@ export default function VortexStage({
           ) : (
             <div
               className={cn(
-                "pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-background to-transparent pb-28",
+                "pointer-events-none z-20 bg-gradient-to-b from-background to-transparent pb-28",
+                permanentFallback
+                  ? "relative"
+                  : "absolute inset-x-0 top-0",
                 full ? "via-background/85" : "via-background/60",
               )}
             >
@@ -882,19 +1080,23 @@ export default function VortexStage({
                     id={headingId}
                     className="mt-1.5 text-[15px] font-medium tracking-tight text-paper sm:text-base"
                   >
-                    {full
-                      ? `${projects.length} cards in an invisible vortex`
-                      : "Five cards in an invisible vortex"}
+                    {permanentFallback
+                      ? `${projects.length} projects, listed as an archive`
+                      : full
+                        ? `${projects.length} cards in an invisible vortex`
+                        : "Five cards in an invisible vortex"}
                   </h1>
                   <p
                     id={instructionsId}
                     className="mt-1.5 text-[12px] leading-relaxed text-silver sm:text-[13px]"
                   >
-                    {reduced
-                      ? "Reduced motion is on. The field is still; use the index to inspect each card."
-                      : full
-                        ? "Scroll to stir the air. Select a card or open the project index. Escape clears."
-                        : "Scroll to stir the air. Select a card to bring it forward. Escape clears."}
+                    {permanentFallback
+                      ? "WebGL is unavailable. Every project is listed below; open the index to inspect one."
+                      : reduced
+                        ? "Reduced motion is on. The field is still; use the index to inspect each card."
+                        : full
+                          ? "Scroll to stir the air. Select a card or open the project index. Escape clears."
+                          : "Scroll to stir the air. Select a card to bring it forward. Escape clears."}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
@@ -907,7 +1109,121 @@ export default function VortexStage({
             </div>
           )}
 
-          <div className="absolute inset-x-0 bottom-0 z-20">
+          {permanentFallback ? (
+            <StaticProjectBrowser projects={projects} home={home} />
+          ) : null}
+
+          {panelProject ? (
+            <aside
+              ref={panelRef}
+              aria-labelledby={panelTitleId}
+              data-vortex-panel=""
+              inert={!panelOpen}
+              className={cn(
+                "pointer-events-auto inset-x-3 bottom-[10rem] mx-auto w-auto max-w-[30rem] overflow-hidden rounded-[10px] border border-white/15 bg-[#08080a]/90 text-[#e8e8e8] shadow-[0_32px_90px_-32px_rgba(0,0,0,0.95)] backdrop-blur-xl transition-[opacity,transform] ease-out",
+                "lg:inset-x-auto lg:right-6 lg:bottom-[9.5rem] lg:mx-0 lg:w-[21rem] lg:max-w-none xl:w-[22rem]",
+                permanentFallback ? "fixed z-40" : "absolute z-30",
+                panelOpen
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none translate-y-2 opacity-0",
+              )}
+              style={{
+                transitionDuration: reduced
+                  ? "0ms"
+                  : panelShown
+                    ? "320ms"
+                    : "220ms",
+              }}
+            >
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              />
+              <div key={panelProject.slug} className="relative p-3 sm:p-4">
+                <button
+                  type="button"
+                  onClick={closePanel}
+                  aria-label="Close project details"
+                  className="absolute right-2 top-2 z-10 inline-flex size-9 items-center justify-center rounded-full border border-white/10 text-white/55 transition-colors hover:border-white/30 hover:text-white"
+                >
+                  <X className="size-3.5" aria-hidden="true" />
+                </button>
+                <div className="grid grid-cols-[36%_1fr] gap-3">
+                  <div
+                    className={cn(
+                      "relative aspect-[4/3] self-start overflow-hidden rounded-[6px] border border-white/10 bg-[#060607]",
+                      reduced ? "" : "vortex-panel-item",
+                    )}
+                    style={reduced ? undefined : { animationDelay: "80ms" }}
+                  >
+                    {panelProject.cover &&
+                    failedCover !== panelProject.slug ? (
+                      <Image
+                        src={panelProject.cover}
+                        alt={`${panelProject.name} cover`}
+                        fill
+                        sizes="(min-width: 1024px) 7.5rem, 36vw"
+                        className="object-contain"
+                        onError={() => setFailedCover(panelProject.slug)}
+                      />
+                    ) : (
+                      <ProjectPlate id={panelProject.index} />
+                    )}
+                  </div>
+                  <div className="min-w-0 pr-9">
+                    <p
+                      className={cn(
+                        "truncate font-mono text-[9px] uppercase tracking-[0.16em] text-white/45",
+                        reduced ? "" : "vortex-panel-item",
+                      )}
+                    >
+                      {panelProject.index} — {panelProject.category}
+                    </p>
+                    <h2
+                      id={panelTitleId}
+                      className={cn(
+                        "mt-1 truncate text-[14px] font-medium tracking-tight text-white",
+                        reduced ? "" : "vortex-panel-item",
+                      )}
+                      style={reduced ? undefined : { animationDelay: "40ms" }}
+                    >
+                      {panelProject.name}
+                    </h2>
+                    {panelProject.shortDescription ? (
+                      <p
+                        className={cn(
+                          "mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-white/65 lg:line-clamp-3",
+                          reduced ? "" : "vortex-panel-item",
+                        )}
+                        style={reduced ? undefined : { animationDelay: "100ms" }}
+                      >
+                        {panelProject.shortDescription}
+                      </p>
+                    ) : null}
+                    <Link
+                      href={`/work/${panelProject.slug}`}
+                      aria-label={`View project: ${panelProject.name}`}
+                      className={cn(
+                        "mt-2.5 inline-flex h-8 w-full items-center justify-center gap-1.5 bg-white px-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#08080a] transition-colors hover:bg-[#c9c9cb]",
+                        reduced ? "" : "vortex-panel-item",
+                      )}
+                      style={reduced ? undefined : { animationDelay: "150ms" }}
+                    >
+                      View project
+                      <span aria-hidden="true">↗</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          ) : null}
+
+          <div
+            className={cn(
+              "inset-x-0 bottom-0 z-20",
+              permanentFallback ? "sticky mt-auto" : "absolute",
+            )}
+          >
             <div
               role="group"
               aria-label="Project cards"
@@ -959,6 +1275,7 @@ export default function VortexStage({
                           : "Selected work index"}
                       </p>
                       <button
+                        ref={indexToggleRef}
                         type="button"
                         aria-expanded={indexOpen}
                         aria-controls={indexId}

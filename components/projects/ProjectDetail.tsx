@@ -323,16 +323,11 @@ export default function ProjectDetail({
                   className="mono-meta inline-flex items-center gap-2 border border-line-strong px-4 py-2.5 text-paper transition-colors hover:border-paper hover:bg-paper hover:text-background"
                 >
                   <ScrambleText
-                    text={
-                      project.status === "development-in-progress"
-                        ? "Open preview"
-                        : "Open demo"
-                    }
+                    text="VIEW LIVE DEMO ↗"
                     level="micro"
                     trigger="view"
                     delay={200}
                   />
-                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
                   <span className="sr-only"> (opens in a new tab)</span>
                 </a>
               ) : null}
@@ -402,15 +397,21 @@ export default function ProjectDetail({
                 trigger="view"
               />
             ) : null
-          ) : (
+          ) : !images.desktop.some(Boolean) &&
+            !images.mobile.some(Boolean) ? (
             <ScrambleText
               as="p"
               className="mono-meta mt-4 max-w-xl leading-relaxed text-ash"
-              text={
-                images.desktop.some(Boolean) || images.mobile.some(Boolean)
-                  ? "Slots marked pending have no supplied image yet."
-                  : "Interface imagery is pending for this project. The panels below reserve the layout and are abstract placeholders, not screenshots."
-              }
+              text="Interface imagery is pending for this project. The panels below reserve the layout and are abstract placeholders, not screenshots."
+              level="body"
+              trigger="view"
+            />
+          ) : images.desktop.every(Boolean) &&
+            images.mobile.every(Boolean) ? null : (
+            <ScrambleText
+              as="p"
+              className="mono-meta mt-4 max-w-xl leading-relaxed text-ash"
+              text="Slots marked pending have no supplied image yet."
               level="body"
               trigger="view"
             />

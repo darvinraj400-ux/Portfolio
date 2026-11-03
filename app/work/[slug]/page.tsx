@@ -67,8 +67,6 @@ export async function generateMetadata({
             images: [
               {
                 url: project.gallery.cover,
-                width: 1600,
-                height: 1200,
                 alt: `${project.name} — project cover`,
               },
             ],

@@ -4,6 +4,9 @@ import type { Vec3Tuple, VortexProject } from "./vortex-types";
 
 export const VORTEX_SEED = 0x5eed1d;
 
+const coverFor = (slug: string) =>
+  PROJECTS.find((project) => project.slug === slug)?.gallery.cover;
+
 /**
  * Five real projects from the portfolio inventory. Nothing is invented and
  * the 33-project collection itself is untouched.
@@ -15,6 +18,7 @@ export const VORTEX_PROJECTS: VortexProject[] = [
     name: "Pastel Aesthetic Theme",
     titleLines: ["Pastel Aesthetic", "Theme"],
     category: "Website design",
+    cover: coverFor("pastel-aesthetic-theme"),
   },
   {
     index: "09",
@@ -22,6 +26,7 @@ export const VORTEX_PROJECTS: VortexProject[] = [
     name: "Aether Cosmos",
     titleLines: ["Aether Cosmos"],
     category: "Website design",
+    cover: coverFor("aether-cosmos"),
   },
   {
     index: "27",
@@ -29,6 +34,7 @@ export const VORTEX_PROJECTS: VortexProject[] = [
     name: "PocketPal",
     titleLines: ["PocketPal"],
     category: "Mobile design",
+    cover: coverFor("pocketpal"),
   },
   {
     index: "28",
@@ -36,6 +42,7 @@ export const VORTEX_PROJECTS: VortexProject[] = [
     name: "DocuFlow AI",
     titleLines: ["DocuFlow AI"],
     category: "AI & automation",
+    cover: coverFor("docuflow-ai"),
   },
   {
     index: "32",
@@ -43,6 +50,7 @@ export const VORTEX_PROJECTS: VortexProject[] = [
     name: "StockPilot",
     titleLines: ["StockPilot"],
     category: "Business systems",
+    cover: coverFor("stockpilot"),
   },
 ];
 
@@ -65,6 +73,7 @@ export const FULL_VORTEX_PROJECTS: VortexProject[] = PROJECTS.map((project) => (
   titleLines: splitTitle(project.name),
   category: VORTEX_CATEGORY_LABEL[project.category] ?? project.category,
   shortDescription: project.shortDescription,
+  cover: project.gallery.cover,
 }));
 
 export const VORTEX_POPULATIONS = [5, 33] as const;

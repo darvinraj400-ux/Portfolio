@@ -16,6 +16,7 @@ import {
   type CardFonts,
   type CardPrint,
 } from "@/components/prototype/card-texture";
+import { trace } from "@/lib/diag-trace";
 
 export type UvRect = { u0: number; v0: number; u1: number; v1: number };
 
@@ -344,6 +345,7 @@ export async function buildVortexAtlas(
   }
 
   await document.fonts.ready;
+  trace("atlas:fonts", document.fonts.status);
 
   const tileWidth = options.tileWidth;
   const tileHeight = Math.round(tileWidth * (FACE_HEIGHT / FACE_WIDTH));
