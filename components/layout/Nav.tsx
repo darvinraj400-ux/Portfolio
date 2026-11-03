@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import SoundControl from "@/components/audio/SoundControl";
+import MotionControl from "@/components/motion/MotionControl";
 import ScrambleText from "@/components/motion/ScrambleText";
 import { NAV_LINKS, SITE } from "@/lib/constants";
 import { getLenisInstance, scrollToId } from "@/lib/scroll";
@@ -257,6 +258,7 @@ export default function Nav({ projectCount }: { projectCount: number }) {
         </ul>
 
         <div className="flex items-center gap-2">
+          <MotionControl />
           <SoundControl />
           <button
             ref={toggleRef}

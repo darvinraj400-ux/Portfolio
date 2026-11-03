@@ -47,6 +47,7 @@ export default function VortexCard({
   onSelect,
 }: VortexCardProps) {
   const gl = useThree((state) => state.gl);
+  const invalidate = useThree((state) => state.invalidate);
   const group = useRef<THREE.Group>(null);
   // Start the visual blend at the restored selection and depth so a resumed
   // scene does not animate its way in from an empty state.
@@ -166,10 +167,32 @@ export default function VortexCard({
     const isDimmed = state.selected !== null && !isSelected;
 
     if (reduced) {
-      hover.current = isHovered ? 1 : 0;
-      focus.current = isSelected ? 1 : 0;
-      dim.current = isDimmed ? 1 : 0;
+      hover.current = THREE.MathUtils.damp(
+        hover.current,
+        isHovered ? 1 : 0,
+        9,
+        delta,
+      );
+      focus.current = THREE.MathUtils.damp(
+        focus.current,
+        isSelected ? 1 : 0,
+        6,
+        delta,
+      );
+      dim.current = THREE.MathUtils.damp(
+        dim.current,
+        isDimmed ? 1 : 0,
+        6,
+        delta,
+      );
       depth.current = clamp((body.position.z + 3) / 7, 0, 1);
+      if (
+        Math.abs(hover.current - (isHovered ? 1 : 0)) > 0.001 ||
+        Math.abs(focus.current - (isSelected ? 1 : 0)) > 0.001 ||
+        Math.abs(dim.current - (isDimmed ? 1 : 0)) > 0.001
+      ) {
+        invalidate();
+      }
     } else {
       hover.current = THREE.MathUtils.damp(
         hover.current,
@@ -227,6 +250,7 @@ export default function VortexCard({
     state.hovered = hovered ? body.index : null;
     gl.domElement.dataset.hover = hovered ? "true" : "false";
     reportCardHover(hovered);
+    invalidate();
   };
 
   return (

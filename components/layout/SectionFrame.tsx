@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import ScrambleText, { ScrambleGroup } from "@/components/motion/ScrambleText";
+import { useMotionPreference } from "@/components/providers/MotionPreferenceProvider";
 
 const played = new Set<string>();
 
@@ -20,16 +21,14 @@ export default function SectionFrame({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const { reduced } = useMotionPreference();
   const sectionRef = useRef<HTMLElement>(null);
   const [plate, setPlate] = useState<PlateState>("rest");
 
   useEffect(() => {
     const key = `${pathname}#${id}`;
     if (played.has(key)) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      played.add(key);
-      return;
-    }
+    if (reduced) return;
     const node = sectionRef.current;
     if (!node) return;
 
@@ -51,7 +50,7 @@ export default function SectionFrame({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [id, pathname]);
+  }, [id, pathname, reduced]);
 
   return (
     <ScrambleGroup active={plate === "playing"}>

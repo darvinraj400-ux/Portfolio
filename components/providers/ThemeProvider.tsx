@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useMotionPreference } from "@/components/providers/MotionPreferenceProvider";
 import { THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
 
 type ThemeApi = {
@@ -30,6 +31,7 @@ function readTheme(): Theme {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const { reduced } = useMotionPreference();
   const [theme, setTheme] = useState<Theme>("dark");
   const themeRef = useRef<Theme>("dark");
   const shiftTimer = useRef<number>(0);
@@ -67,7 +69,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     );
     if (meta) meta.content = next === "light" ? "#f2f2f0" : "#000000";
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduced) return;
     root.removeAttribute("data-theme-shift");
     // Restart the CSS exposure even when the visitor toggles quickly.
     void root.offsetWidth;
@@ -77,7 +79,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.removeAttribute("data-theme-shift");
       shiftTimer.current = 0;
     }, 520);
-  }, []);
+  }, [reduced]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

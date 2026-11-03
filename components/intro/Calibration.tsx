@@ -21,7 +21,6 @@ var done=false,started=false;
 try{done=window.localStorage.getItem(${JSON.stringify(COMPLETE_KEY)})==="1"}catch(e){}
 try{started=window.sessionStorage.getItem(${JSON.stringify(START_KEY)})==="1"}catch(e){}
 if(done||started)return;
-if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
 try{window.sessionStorage.setItem(${JSON.stringify(START_KEY)},"1")}catch(e){}
 var inputs=["wheel","touchstart","keydown","pointerdown"];
 var timer=0;

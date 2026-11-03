@@ -22,7 +22,6 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { useSound } from "@/components/audio/SoundProvider";
 import ScrambleText from "@/components/motion/ScrambleText";
 import { SITE } from "@/lib/constants";
-import { trace } from "@/lib/diag-trace";
 import { getVortexEnvironment } from "@/lib/vortex-config";
 import { createVortexScrollModel } from "@/lib/vortex-scroll";
 import { loadVortexScene } from "@/lib/vortex-state";
@@ -66,7 +65,7 @@ class SceneBoundary extends Component<
   }
 
   componentDidCatch(error: Error) {
-    trace("scene-boundary", error);
+    console.error("3D scene crashed; switching to the static archive.", error);
     this.props.onError();
   }
 
@@ -604,12 +603,10 @@ export default function VortexStage({
   useEffect(() => {
     if (!queryReady) return;
     if (forcedFallback) {
-      trace("webgl:probe", "forced");
       setWebglStatus("unavailable");
       return;
     }
     const available = supportsWebGL();
-    trace("webgl:probe", available ? "available" : "unavailable");
     setWebglStatus(available ? "available" : "unavailable");
   }, [forcedFallback, queryReady]);
 
@@ -746,12 +743,10 @@ export default function VortexStage({
   }, [active]);
 
   const handleSceneReady = useCallback(() => {
-    trace("stage:scene-ready");
     setSceneReady(true);
   }, []);
 
   const handleSceneError = useCallback(() => {
-    trace("stage:scene-error");
     setSceneFailed(true);
   }, []);
 
@@ -993,7 +988,7 @@ export default function VortexStage({
                       {permanentFallback
                         ? "WebGL is unavailable. Every project is listed in the static archive below and in the project index."
                         : reduced
-                          ? "Reduced motion is on. Choose a project from the index to inspect it."
+                          ? "Reduced motion is on. Drag the field to look around, or choose a project from the index to inspect it."
                           : "Scroll to move through the field, or choose a project from the index to inspect it."}
                     </p>
                     <div className="pointer-events-auto mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
@@ -1093,7 +1088,7 @@ export default function VortexStage({
                     {permanentFallback
                       ? "WebGL is unavailable. Every project is listed below; open the index to inspect one."
                       : reduced
-                        ? "Reduced motion is on. The field is still; use the index to inspect each card."
+                        ? "Reduced motion is on. Drag to look around; use the index to inspect each card."
                         : full
                           ? "Scroll to stir the air. Select a card or open the project index. Escape clears."
                           : "Scroll to stir the air. Select a card to bring it forward. Escape clears."}

@@ -308,48 +308,6 @@ function buildFullInitialBodies(
 }
 
 
-/**
- * A calm, readable constellation used when motion is reduced. Cards face
- * the camera; mobile stacks them vertically so five landscape objects stay
- * legible inside the narrower volume.
- */
-export function buildPresentationBodies(
-  count: number,
-  env: VortexEnvironment,
-): SeededBody[] {
-  if (env.population === 33) {
-    return buildFullPresentationBodies(count, env);
-  }
-  const desktop = env.id === "desktop";
-  const xs = desktop
-    ? [-0.52, 0.03, 0.54, -0.27, 0.32]
-    : [-0.676, 0.676, -0.618, 0.706, 0];
-  const heights = desktop
-    ? [0.66, 0.74, 0.61, 0.4, 0.37]
-    : [0.574, 0.545, 0.396, 0.362, 0.207];
-  const depths = desktop ? [2.4, 0.7, 2.6, 1.3, 3.2] : [0.4, -0.2, 1.0, 0.1, 0.9];
-  const yaws = desktop ? [0.14, -0.1, 0.06, 0.18, -0.15] : [0.07, -0.06, 0.04, -0.05, 0.06];
-  const volumeHeight = env.volume.top - env.volume.bottom;
-  const bodies: SeededBody[] = [];
-
-  for (let index = 0; index < count; index += 1) {
-    const y = env.volume.bottom + heights[index] * volumeHeight;
-    const x = xs[index] * env.volume.radiusBottom;
-    const position = new Vector3(x, y, depths[index]);
-    const quaternion = new Quaternion().setFromEuler(
-      new Euler(0.02, yaws[index], 0, "YXZ"),
-    );
-    bodies.push({
-      position,
-      quaternion,
-      velocity: new Vector3(),
-      angularVelocity: new Vector3(),
-    });
-  }
-
-  return bodies;
-}
-
 export function cardHalfExtents(env: VortexEnvironment) {
   const scale = env.cardScale;
   return new Vector3(
@@ -357,63 +315,6 @@ export function cardHalfExtents(env: VortexEnvironment) {
     (VORTEX_CARD.height / 2) * scale,
     (VORTEX_CARD.depth / 2) * scale,
   );
-}
-
-/**
- * A calm, tapered archive wall for reduced motion. All 33 cards face the
- * camera, with fewer cards in the narrow upper rows and more in the wide
- * lower rows. Static by design; selection still moves one card forward.
- */
-function buildFullPresentationBodies(
-  count: number,
-  env: VortexEnvironment,
-): SeededBody[] {
-  const desktop = env.id === "desktop";
-  const rowCounts = desktop
-    ? [4, 6, 7, 8, 8]
-    : [3, 3, 4, 4, 4, 4, 4, 4, 3];
-  const spacingX = desktop ? 2.9 : 1.78;
-  const spacingY = desktop ? 1.95 : 1.3;
-  const centerY = desktop ? 0.4 : 0;
-  const random = mulberry32(VORTEX_SEED ^ 0x5a17);
-  const positions: { x: number; y: number; z: number; yaw: number }[] = [];
-
-  rowCounts.forEach((rowCount, row) => {
-    const y = centerY + ((rowCounts.length - 1) / 2 - row) * spacingY;
-    for (let column = 0; column < rowCount; column += 1) {
-      const x = (column - (rowCount - 1) / 2) * spacingX;
-      const depth = desktop
-        ? -0.9 + random() * 1.8
-        : -0.45 + random() * 0.9;
-      positions.push({
-        x: x + (random() - 0.5) * 0.1,
-        y: y + (random() - 0.5) * 0.1,
-        z: depth,
-        yaw: (random() - 0.5) * 0.14,
-      });
-    }
-  });
-
-  const bodies: SeededBody[] = [];
-  for (let index = 0; index < count; index += 1) {
-    const slot = positions[index];
-    if (!slot) break;
-    bodies.push({
-      position: new Vector3(slot.x, slot.y, slot.z),
-      quaternion: new Quaternion().setFromEuler(
-        new Euler(
-          (random() - 0.5) * 0.04,
-          slot.yaw,
-          (random() - 0.5) * 0.035,
-          "YXZ",
-        ),
-      ),
-      velocity: new Vector3(),
-      angularVelocity: new Vector3(),
-    });
-  }
-
-  return bodies;
 }
 
 export function cardMass(index: number) {

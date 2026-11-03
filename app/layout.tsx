@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { SoundProvider } from "@/components/audio/SoundProvider";
-import DeviceDiag from "@/components/debug/DeviceDiag";
 import Nav from "@/components/layout/Nav";
 import PullChain from "@/components/layout/PullChain";
 import SmoothScroll from "@/components/layout/SmoothScroll";
@@ -10,6 +9,7 @@ import { MotionPreferenceProvider } from "@/components/providers/MotionPreferenc
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import Footer from "@/components/sections/Footer";
 import { SITE } from "@/lib/constants";
+import { MOTION_BOOTSTRAP_SCRIPT } from "@/lib/motion";
 import { PROJECT_COUNT } from "@/lib/projects";
 import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -66,7 +66,7 @@ export default function RootLayout({
       className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
       <head>
-        <DeviceDiag />
+        <script dangerouslySetInnerHTML={{ __html: MOTION_BOOTSTRAP_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
       </head>
       <body className="min-h-full bg-background font-sans">

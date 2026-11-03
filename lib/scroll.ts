@@ -5,7 +5,7 @@
  * motion bypasses both: the browser scrolls instantly instead.
  */
 
-import { prefersReducedMotion } from "@/lib/motion";
+import { isMotionReduced } from "@/lib/motion";
 
 export type LenisLike = {
   scrollTo: (
@@ -43,13 +43,13 @@ export function scrollToId(id: string): void {
   if (!el) return;
 
   const lenis = getLenisInstance();
-  if (lenis && !prefersReducedMotion()) {
+  if (lenis && !isMotionReduced()) {
     lenis.scrollTo(el, { offset: NAV_OFFSET });
     return;
   }
 
   el.scrollIntoView({
-    behavior: prefersReducedMotion() ? "auto" : "smooth",
+    behavior: isMotionReduced() ? "auto" : "smooth",
     block: "start",
   });
 }

@@ -4,57 +4,74 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { MotionConfig } from "motion/react";
 import {
-  MOTION_QUERY,
-  subscribeToMotionPreference,
+  getMotionSnapshot,
+  getServerMotionSnapshot,
+  setMotionPreference,
+  subscribeMotionPreference,
+  syncMotionDocument,
+  type MotionMode,
+  type MotionPreference,
 } from "@/lib/motion";
 
-type MotionPreference = {
+type MotionPreferenceContextValue = {
+  preference: MotionPreference;
+  mode: MotionMode;
   reduced: boolean;
-  preference: "reduce" | "full";
+  systemReduced: boolean;
+  setPreference: (preference: MotionPreference) => void;
 };
 
-const MotionPreferenceContext = createContext<MotionPreference>({
+const MotionPreferenceContext = createContext<MotionPreferenceContextValue>({
+  preference: "system",
+  mode: "full",
   reduced: false,
-  preference: "full",
+  systemReduced: false,
+  setPreference: () => undefined,
 });
-
-function getClientSnapshot(): boolean {
-  return window.matchMedia(MOTION_QUERY).matches;
-}
-
-function getServerSnapshot(): boolean {
-  return false;
-}
 
 export function MotionPreferenceProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const reduced = useSyncExternalStore(
-    subscribeToMotionPreference,
-    getClientSnapshot,
-    getServerSnapshot,
+  const snapshot = useSyncExternalStore(
+    subscribeMotionPreference,
+    getMotionSnapshot,
+    getServerMotionSnapshot,
   );
 
   useEffect(() => {
-    document.documentElement.dataset.motion = reduced ? "reduced" : "full";
-  }, [reduced]);
+    syncMotionDocument();
+  }, []);
+
+  const value = useMemo<MotionPreferenceContextValue>(
+    () => ({
+      preference: snapshot.preference,
+      mode: snapshot.mode,
+      reduced: snapshot.mode === "reduced",
+      systemReduced: snapshot.systemReduced,
+      setPreference: setMotionPreference,
+    }),
+    [snapshot],
+  );
 
   return (
-    <MotionPreferenceContext.Provider
-      value={{ reduced, preference: reduced ? "reduce" : "full" }}
-    >
-      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    <MotionPreferenceContext.Provider value={value}>
+      <MotionConfig
+        reducedMotion={snapshot.mode === "reduced" ? "always" : "never"}
+      >
+        {children}
+      </MotionConfig>
     </MotionPreferenceContext.Provider>
   );
 }
 
-export function useMotionPreference(): MotionPreference {
+export function useMotionPreference(): MotionPreferenceContextValue {
   return useContext(MotionPreferenceContext);
 }

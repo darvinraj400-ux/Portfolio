@@ -8,7 +8,6 @@ import InspectorLight, {
 } from "@/components/three/InspectorLight";
 import StudioEnvironment from "@/components/three/StudioEnvironment";
 import { reportCardHover } from "@/lib/cursor-signal";
-import { trace } from "@/lib/diag-trace";
 import { VortexWorld } from "@/lib/vortex-physics";
 import type { Theme } from "@/lib/theme";
 import type { VortexEnvironment } from "@/lib/vortex-config";
@@ -138,7 +137,7 @@ function ContextGuard({ onError }: { onError: () => void }) {
     const element = gl.domElement;
     const handleLost = (event: Event) => {
       event.preventDefault();
-      trace("gl:context-lost");
+      console.error("WebGL context lost; switching to the static archive.");
       onError();
     };
     element.addEventListener("webglcontextlost", handleLost);
@@ -158,7 +157,6 @@ function ReadySignal({ onReady }: { onReady: () => void }) {
       second = requestAnimationFrame(() => {
         if (sent.current) return;
         sent.current = true;
-        trace("canvas:ready-signal");
         onReady();
       });
     });
@@ -202,6 +200,10 @@ function VortexWorldView({
   const [lampEnabled, setLampEnabled] = useState(true);
   const backlight = useRef<THREE.PointLight>(null);
   const lampReport = useRef<(() => VortexLampReport) | null>(null);
+  const rig = useRef<THREE.Group>(null);
+  const spinTarget = useRef(0);
+  const drag = useRef<{ id: number; x: number } | null>(null);
+  const wasReduced = useRef(reduced);
 
   const readScene = useCallback(() => {
     const bounds = gl.domElement.getBoundingClientRect();
@@ -236,9 +238,56 @@ function VortexWorldView({
   }, [readScene]);
 
   useEffect(() => {
+    if (wasReduced.current && !reduced) {
+      world.rotateFrozen(rig.current?.rotation.y ?? 0);
+      if (rig.current) rig.current.rotation.y = 0;
+      spinTarget.current = 0;
+    }
+    wasReduced.current = reduced;
     world.setReduced(reduced);
     invalidate();
   }, [invalidate, reduced, world]);
+
+  useEffect(() => {
+    if (!reduced) return;
+    const element = gl.domElement;
+    element.style.cursor = "grab";
+
+    const down = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      drag.current = { id: event.pointerId, x: event.clientX };
+      element.style.cursor = "grabbing";
+    };
+    const move = (event: PointerEvent) => {
+      const current = drag.current;
+      if (!current || current.id !== event.pointerId) return;
+      const dx = event.clientX - current.x;
+      current.x = event.clientX;
+      spinTarget.current = THREE.MathUtils.clamp(
+        spinTarget.current + dx * 0.004,
+        -1.1,
+        1.1,
+      );
+      invalidate();
+    };
+    const end = (event: PointerEvent) => {
+      if (!drag.current || drag.current.id !== event.pointerId) return;
+      drag.current = null;
+      element.style.cursor = "grab";
+    };
+
+    element.addEventListener("pointerdown", down);
+    element.addEventListener("pointermove", move);
+    element.addEventListener("pointerup", end);
+    element.addEventListener("pointercancel", end);
+    return () => {
+      element.removeEventListener("pointerdown", down);
+      element.removeEventListener("pointermove", move);
+      element.removeEventListener("pointerup", end);
+      element.removeEventListener("pointercancel", end);
+      element.style.cursor = "";
+    };
+  }, [gl, invalidate, reduced]);
 
   useEffect(() => {
     visual.current.selected = selectedIndex;
@@ -282,6 +331,19 @@ function VortexWorldView({
 
   useFrame((_, delta) => {
     world.advance(delta, input);
+    const group = rig.current;
+    if (!reduced || !group) return;
+    group.rotation.y = THREE.MathUtils.damp(
+      group.rotation.y,
+      spinTarget.current,
+      10,
+      Math.min(delta, 0.1),
+    );
+    if (Math.abs(group.rotation.y - spinTarget.current) > 0.0004) {
+      invalidate();
+    } else {
+      group.rotation.y = spinTarget.current;
+    }
   });
 
   return (
@@ -325,21 +387,23 @@ function VortexWorldView({
         report={lampReport}
       />
 
-      {projects.map((_, index) => {
-        const body = world.bodies[index];
-        if (!body) return null;
-        return (
-          <VortexCard
-            key={body.project.slug}
-            body={body}
-            atlas={atlas}
-            sheen={sheen}
-            visual={visual}
-            reduced={reduced}
-            onSelect={onSelect}
-          />
-        );
-      })}
+      <group ref={rig}>
+        {projects.map((_, index) => {
+          const body = world.bodies[index];
+          if (!body) return null;
+          return (
+            <VortexCard
+              key={body.project.slug}
+              body={body}
+              atlas={atlas}
+              sheen={sheen}
+              visual={visual}
+              reduced={reduced}
+              onSelect={onSelect}
+            />
+          );
+        })}
+      </group>
     </>
   );
 }
@@ -367,7 +431,6 @@ export default function VortexCanvas({
     let instance: VortexWorld | null = null;
     setWorld(null);
     const saved = loadVortexScene();
-    trace("world:create-start");
 
     VortexWorld.create(projects, environment, reducedRef.current)
       .then((created) => {
@@ -383,11 +446,10 @@ export default function VortexCanvas({
           created.restoreState(saved.world);
         }
         instance = created;
-        trace("world:create-ok");
         setWorld(created);
       })
       .catch((error) => {
-        trace("world:create-error", error);
+        console.error("3D scene failed to start.", error);
         if (mounted) handleError();
       });
 
@@ -408,7 +470,6 @@ export default function VortexCanvas({
   useEffect(() => {
     let cancelled = false;
     setAtlas(null);
-    trace("atlas:build-start");
 
     buildVortexAtlas(
       projects.map((project) => ({
@@ -427,11 +488,10 @@ export default function VortexCanvas({
           next.texture.dispose();
           return;
         }
-        trace("atlas:build-ok");
         setAtlas(next);
       })
       .catch((error) => {
-        trace("atlas:build-error", error);
+        console.error("Project textures failed to build.", error);
         if (!cancelled) handleError();
       });
 
@@ -474,10 +534,6 @@ export default function VortexCanvas({
         far: environment.camera.far,
       }}
       onCreated={({ gl }) => {
-        trace(
-          "gl:created",
-          `webgl2=${gl.capabilities.isWebGL2} maxTex=${gl.capabilities.maxTextureSize}`,
-        );
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = SCENE_EXPOSURE;
         gl.setClearAlpha(0);

@@ -462,12 +462,6 @@ html[data-theme="light"] {
   animation: vortex-panel-item-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vortex-panel-item {
-    animation: none;
-  }
-}
-
 /* One orchestrated entrance for the opening frame, CSS only. */
 @keyframes hero-rise {
   from {
@@ -480,20 +474,21 @@ html[data-theme="light"] {
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .hero-enter {
-    opacity: 0;
-    animation: hero-rise 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-  .hero-enter-1 {
-    animation-delay: 90ms;
-  }
-  .hero-enter-2 {
-    animation-delay: 180ms;
-  }
-  .hero-enter-3 {
-    animation-delay: 270ms;
-  }
+html[data-motion="full"] .hero-enter {
+  opacity: 0;
+  animation: hero-rise 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+html[data-motion="full"] .hero-enter-1 {
+  animation-delay: 90ms;
+}
+
+html[data-motion="full"] .hero-enter-2 {
+  animation-delay: 180ms;
+}
+
+html[data-motion="full"] .hero-enter-3 {
+  animation-delay: 270ms;
 }
 
 /* Opening calibration plate. Decorative, fixed 2.2s, never blocks the page. */
@@ -507,9 +502,28 @@ html[data-theme="light"] {
   pointer-events: none;
 }
 
-html[data-intro="run"] .calibration {
+html[data-motion="full"][data-intro="run"] .calibration {
   display: block;
   animation: calibration-plate 2200ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+/* Reduced: the branding stays readable, then leaves on a plain opacity fade. */
+html[data-motion="reduced"][data-intro="run"] .calibration {
+  display: block;
+  animation: calibration-plate-soft 1800ms ease forwards;
+}
+
+html[data-motion="reduced"] .calibration-line {
+  transform: none;
+}
+
+html[data-motion="reduced"] .calibration-meta,
+html[data-motion="reduced"] .calibration-ticks {
+  opacity: 1;
+}
+
+html[data-motion="reduced"] .calibration-scale-line {
+  transform: scaleX(1);
 }
 
 .calibration[data-dismissed="true"] {
@@ -537,15 +551,25 @@ html[data-intro="run"] .calibration {
   }
 }
 
+@keyframes calibration-plate-soft {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .calibration-line {
   transform: translate3d(0, 110%, 0);
 }
 
-html[data-intro="run"] .calibration-line {
+html[data-motion="full"][data-intro="run"] .calibration-line {
   animation: calibration-rise 820ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-html[data-intro="run"] .calibration-line-2 {
+html[data-motion="full"][data-intro="run"] .calibration-line-2 {
   animation-delay: 90ms;
 }
 
@@ -559,7 +583,7 @@ html[data-intro="run"] .calibration-line-2 {
   opacity: 0;
 }
 
-html[data-intro="run"] .calibration-meta {
+html[data-motion="full"][data-intro="run"] .calibration-meta {
   animation: calibration-fade 420ms ease 120ms forwards;
 }
 
@@ -567,7 +591,7 @@ html[data-intro="run"] .calibration-meta {
   opacity: 0;
 }
 
-html[data-intro="run"] .calibration-ticks {
+html[data-motion="full"][data-intro="run"] .calibration-ticks {
   animation: calibration-fade 300ms ease 620ms forwards;
 }
 
@@ -576,7 +600,7 @@ html[data-intro="run"] .calibration-ticks {
   transform-origin: left;
 }
 
-html[data-intro="run"] .calibration-scale-line {
+html[data-motion="full"][data-intro="run"] .calibration-scale-line {
   animation: calibration-measure 1100ms cubic-bezier(0.22, 1, 0.36, 1) 620ms
     forwards;
 }
@@ -595,12 +619,6 @@ html[data-intro="run"] .calibration-scale-line {
 
 .calibration-skip {
   pointer-events: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .calibration {
-    display: none !important;
-  }
 }
 
 /* Survey reticle: a fixed desktop cursor. Native cursor only returns where
@@ -809,15 +827,13 @@ html[data-cursor="instrument"]:has(dialog[open]) * {
   cursor: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reticle {
-    display: none;
-  }
+html[data-motion="reduced"] .reticle {
+  display: none;
+}
 
-  html[data-cursor="instrument"],
-  html[data-cursor="instrument"] * {
-    cursor: auto !important;
-  }
+html[data-motion="reduced"][data-cursor="instrument"],
+html[data-motion="reduced"][data-cursor="instrument"] * {
+  cursor: auto !important;
 }
 
 /* Plate & Exposure: masks and rules register type without moving layout. */
@@ -934,140 +950,135 @@ html[data-cursor="instrument"]:has(dialog[open]) * {
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html[data-intro="run"] .hero-plate .plate-line {
-    animation: plate-rise 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
-  }
+html[data-motion="full"][data-intro="run"] .hero-plate .plate-line {
+  animation: plate-rise 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
+}
 
-  html[data-intro="run"] .hero-plate .plate-line-2 {
-    animation-delay: 1590ms;
-  }
+html[data-motion="full"][data-intro="run"] .hero-plate .plate-line-2 {
+  animation-delay: 1590ms;
+}
 
-  html[data-intro="run"] .hero-plate .plate-follow {
-    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 1700ms both;
-  }
+html[data-motion="full"][data-intro="run"] .hero-plate .plate-follow {
+  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 1700ms both;
+}
 
-  .plate-title-inner {
-    animation: plate-title-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+html[data-motion="full"] .plate-title-inner {
+  animation: plate-title-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
-  .plate-meta-1 {
-    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
-  }
+html[data-motion="full"] .plate-meta-1 {
+  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
 
-  .plate-meta-2 {
-    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
-  }
+html[data-motion="full"] .plate-meta-2 {
+  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
+}
 
-  .plate-meta-3 {
-    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
-  }
+html[data-motion="full"] .plate-meta-3 {
+  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+}
 
-  .plate-route-rule {
-    animation: plate-rule-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+html[data-motion="full"] .plate-route-rule {
+  animation: plate-rule-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
-  .plate-section[data-plate="waiting"] .plate-label {
-    clip-path: inset(0 100% 0 0);
-  }
+html[data-motion="full"] .plate-section[data-plate="waiting"] .plate-label {
+  clip-path: inset(0 100% 0 0);
+}
 
-  .plate-section[data-plate="waiting"] .plate-rule {
-    transform: scaleX(0);
-  }
+html[data-motion="full"] .plate-section[data-plate="waiting"] .plate-rule {
+  transform: scaleX(0);
+}
 
-  .plate-section[data-plate="waiting"] .plate-body {
-    opacity: 0;
-    transform: translate3d(0, 8px, 0);
-  }
+html[data-motion="full"] .plate-section[data-plate="waiting"] .plate-body {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+}
 
-  .plate-section[data-plate="playing"] .plate-label {
-    animation: plate-label-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
-  }
+html[data-motion="full"] .plate-section[data-plate="playing"] .plate-label {
+  animation: plate-label-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+}
 
-  .plate-section[data-plate="playing"] .plate-rule {
-    animation: plate-rule-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+html[data-motion="full"] .plate-section[data-plate="playing"] .plate-rule {
+  animation: plate-rule-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
-  .plate-section[data-plate="playing"] .plate-body {
-    animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
-  }
+html[data-motion="full"] .plate-section[data-plate="playing"] .plate-body {
+  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
+}
 
-  .plate-cover-shutter {
-    display: block;
-    position: absolute;
-    inset: 0;
-    background: #000;
-    pointer-events: none;
-    animation: plate-cover-expose 500ms cubic-bezier(0.22, 1, 0.36, 1) 120ms
-      both;
-  }
+html[data-motion="full"] .plate-cover-shutter {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  animation: plate-cover-expose 500ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
 
-  .archive-card {
-    animation: archive-card-in 180ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
+html[data-motion="full"] .archive-card {
+  animation: archive-card-in 180ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
 
-  .archive-count {
-    display: inline-block;
-    animation: archive-count-in 120ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
+html[data-motion="full"] .archive-count {
+  display: inline-block;
+  animation: archive-count-in 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-    html[data-intro="run"] .hero-plate .plate-sweep {
-      background-image:
-        linear-gradient(
-          180deg,
-          #f7f7f7 0%,
-          #d2d2d2 32%,
-          #7c7c7c 50%,
-          #ededed 66%,
-          #8f8f8f 100%
-        ),
-        linear-gradient(
-          90deg,
-          transparent 38%,
-          rgba(255, 255, 255, 0.45) 50%,
-          transparent 62%
-        );
-      background-size:
-        100% 100%,
-        260% 100%;
-      background-repeat: no-repeat;
-      background-position:
-        0 0,
-        130% 0;
-      animation: plate-sweep 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
-    }
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  html[data-motion="full"][data-intro="run"] .hero-plate .plate-sweep {
+    background-image:
+      linear-gradient(
+        180deg,
+        #f7f7f7 0%,
+        #d2d2d2 32%,
+        #7c7c7c 50%,
+        #ededed 66%,
+        #8f8f8f 100%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 38%,
+        rgba(255, 255, 255, 0.45) 50%,
+        transparent 62%
+      );
+    background-size:
+      100% 100%,
+      260% 100%;
+    background-repeat: no-repeat;
+    background-position:
+      0 0,
+      130% 0;
+    animation: plate-sweep 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .plate-cover-shutter {
-    display: none !important;
-  }
+html[data-motion="reduced"] .plate-cover-shutter {
+  display: none !important;
+}
 
-  .archive-card,
-  .archive-count {
-    animation: none !important;
-    clip-path: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
+html[data-motion="reduced"] .archive-card,
+html[data-motion="reduced"] .archive-count {
+  animation: none !important;
+  clip-path: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
 
-  .plate-line,
-  .plate-follow,
-  .plate-title-inner,
-  .plate-meta-1,
-  .plate-meta-2,
-  .plate-meta-3,
-  .plate-label,
-  .plate-rule,
-  .plate-route-rule,
-  .plate-body {
-    animation: none !important;
-    clip-path: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-  }
+html[data-motion="reduced"] .plate-line,
+html[data-motion="reduced"] .plate-follow,
+html[data-motion="reduced"] .plate-title-inner,
+html[data-motion="reduced"] .plate-meta-1,
+html[data-motion="reduced"] .plate-meta-2,
+html[data-motion="reduced"] .plate-meta-3,
+html[data-motion="reduced"] .plate-label,
+html[data-motion="reduced"] .plate-rule,
+html[data-motion="reduced"] .plate-route-rule,
+html[data-motion="reduced"] .plate-body {
+  animation: none !important;
+  clip-path: none !important;
+  transform: none !important;
+  opacity: 1 !important;
 }
 
 /* Text scramble: the hidden reserve owns layout so decoding cannot shift it;
@@ -1145,18 +1156,14 @@ html[data-cursor="instrument"]:has(dialog[open]) * {
   animation-play-state: paused;
 }
 
-/* Reduced motion: no decorous movement. Tickers become scrollable rows. */
+/* No-JS fallback: before the motion bootstrap runs, honour the system setting.
+   Once data-motion is set, the effective preference takes over. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  html:not([data-motion]) {
+    scroll-behavior: auto;
   }
 
-  .marquee {
+  html:not([data-motion]) .marquee {
     overflow-x: auto;
     mask-image: linear-gradient(
       to right,
@@ -1173,11 +1180,11 @@ html[data-cursor="instrument"]:has(dialog[open]) * {
     scrollbar-width: thin;
   }
 
-  .marquee-track {
+  html:not([data-motion]) .marquee-track {
     animation: none !important;
   }
 
-  .marquee-track > [aria-hidden="true"] {
+  html:not([data-motion]) .marquee-track > [aria-hidden="true"] {
     display: none;
   }
 }
@@ -1244,27 +1251,25 @@ html[data-theme="light"] .calibration {
   background: var(--background);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-    html[data-theme="light"][data-intro="run"]
-      .hero-plate
-      .plate-sweep {
-      background-image:
-        linear-gradient(
-          180deg,
-          #4a4a47 0%,
-          #222220 32%,
-          #6b6a66 50%,
-          #171716 66%,
-          #3f3f3c 100%
-        ),
-        linear-gradient(
-          90deg,
-          transparent 38%,
-          rgba(16, 16, 16, 0.16) 50%,
-          transparent 62%
-        );
-    }
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  html[data-motion="full"][data-theme="light"][data-intro="run"]
+    .hero-plate
+    .plate-sweep {
+    background-image:
+      linear-gradient(
+        180deg,
+        #4a4a47 0%,
+        #222220 32%,
+        #6b6a66 50%,
+        #171716 66%,
+        #3f3f3c 100%
+      ),
+      linear-gradient(
+        90deg,
+        transparent 38%,
+        rgba(16, 16, 16, 0.16) 50%,
+        transparent 62%
+      );
   }
 }
 
@@ -1272,7 +1277,7 @@ html[data-theme="light"] .calibration {
 .pull-chain {
   position: fixed;
   top: 0;
-  right: calc(7.5rem + env(safe-area-inset-right, 0px));
+  right: calc(9.75rem + env(safe-area-inset-right, 0px));
   z-index: 60;
   display: flex;
   flex-direction: column;
@@ -1280,16 +1285,12 @@ html[data-theme="light"] .calibration {
   pointer-events: none;
 }
 
-/* The platform menu is a full-width sheet; keep the chain out of it. */
+/* Full-width or popover sheets cover the chain; hide it while they are open. */
 @media (max-width: 767px) {
-  html:has(#mobile-menu) .pull-chain {
+  html:has(#mobile-menu) .pull-chain,
+  html:has([aria-label="Sound settings"]) .pull-chain,
+  html:has([aria-label="Motion settings"]) .pull-chain {
     visibility: hidden;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1279px) {
-  .pull-chain {
-    right: calc(9.5rem + env(safe-area-inset-right, 0px));
   }
 }
 
@@ -1505,16 +1506,9 @@ html[data-theme-shift="to-dark"]::after {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html[data-theme-shift]::after {
-    display: none;
-    animation: none;
-  }
-
-  .pull-chain-cord,
-  .pull-chain-handle {
-    transition: none;
-  }
+html[data-motion="reduced"][data-theme-shift]::after {
+  display: none;
+  animation: none;
 }
 
 html[data-motion="reduced"] .pull-chain-cord,

@@ -8,7 +8,6 @@ import {
 } from "./vortex-config";
 import {
   buildInitialBodies,
-  buildPresentationBodies,
   cardHalfExtents,
   type SeededBody,
 } from "./vortex-distribution";
@@ -18,7 +17,6 @@ import {
   sampleAir,
   vortexRadiusAt,
 } from "./vortex-forces";
-import { trace } from "./diag-trace";
 import type {
   Vec3Tuple,
   VortexCollisionSnapshot,
@@ -71,16 +69,13 @@ let rapierLoader: Promise<RapierApi> | null = null;
 
 function loadRapier(): Promise<RapierApi> {
   if (!rapierLoader) {
-    trace("rapier:import-start");
     rapierLoader = import("@dimforge/rapier3d-compat")
       .then(async (rapier) => {
-        trace("rapier:import-ok");
         await rapier.init();
-        trace("rapier:init-ok");
         return rapier;
       })
       .catch((error) => {
-        trace("rapier:error", error);
+        console.error("Vortex physics failed to load.", error);
         rapierLoader = null;
         throw error;
       });
@@ -93,6 +88,8 @@ const clamp = (value: number, min: number, max: number) =>
 
 const damp = (current: number, target: number, rate: number, delta: number) =>
   current + (target - current) * (1 - Math.exp(-rate * delta));
+
+const Y_AXIS = new Vector3(0, 1, 0);
 
 const smoothstep = (edge0: number, edge1: number, value: number) => {
   const amount = clamp((value - edge0) / (edge1 - edge0), 0, 1);
@@ -361,67 +358,66 @@ export class VortexWorld {
     if (this.reduced === reduced) return;
     this.reduced = reduced;
     this.accumulator = 0;
-    if (reduced) {
-      this.applyReducedPose();
-    } else {
-      this.bodies.forEach((body) => {
-        this.placeBody(
-          body,
-          body.seed.position,
-          body.seed.quaternion,
-          this.tempA.copy(body.seed.velocity).multiplyScalar(0.55),
-          this.tempB.copy(body.seed.angularVelocity).multiplyScalar(0.6),
-        );
-        body.selectionBlend = 0;
-      });
+    this.resumeFrame = false;
+    this.freezePose();
+    if (!reduced) {
       this.time = 0;
-      this.windLevel = 1;
-      this.spinDirection = 1;
-      this.scrollEnergy = 0;
       this.resetCollisionMetrics();
     }
   }
 
-  private applyReducedPose() {
-    const presentation = buildPresentationBodies(
-      this.bodies.length,
-      this.environment,
-    );
-    this.bodies.forEach((body, index) => {
-      const pose = presentation[index];
+  /**
+   * Holds every card where it is with no velocity: entering reduced mode is a
+   * freeze, and leaving it resumes from the same arrangement instead of
+   * snapping back to the seeded spiral.
+   */
+  private freezePose() {
+    this.bodies.forEach((body) => {
       this.placeBody(
         body,
-        pose.position,
-        pose.quaternion,
+        this.tempC.copy(body.position),
+        this.quaternionB.copy(body.orientation),
         this.tempA.set(0, 0, 0),
         this.tempB.set(0, 0, 0),
       );
       body.selectionBlend = 0;
-      body.selected = false;
+      body.selected = this.selected === body.index;
     });
-
-    if (this.selected !== null) {
-      const body = this.bodies[this.selected];
-      if (body) {
-        const orientation = quaternionFromYawPitchRoll(
-          this.environment.selection.yaw,
-          this.environment.selection.pitch,
-          this.environment.selection.roll,
-        );
-        this.placeBody(
-          body,
-          this.tempC.fromArray(this.environment.selection.target),
-          orientation,
-          this.tempA.set(0, 0, 0),
-          this.tempB.set(0, 0, 0),
-        );
-        body.selected = true;
-        body.selectionBlend = 1;
-      }
-    }
     this.windLevel = 1;
     this.spinDirection = 1;
     this.scrollEnergy = 0;
+  }
+
+  private applyReducedPose() {
+    this.bodies.forEach((body) => {
+      this.placeBody(
+        body,
+        body.seed.position,
+        body.seed.quaternion,
+        this.tempA.set(0, 0, 0),
+        this.tempB.set(0, 0, 0),
+      );
+      body.selected = false;
+      body.selectionBlend = 0;
+    });
+    this.windLevel = 1;
+    this.spinDirection = 1;
+    this.scrollEnergy = 0;
+  }
+
+  /** Rotates the frozen spiral so reduced mode can be inspected by drag. */
+  rotateFrozen(angle: number) {
+    if (this.disposed || Math.abs(angle) < 1e-5) return;
+    const rotation = this.quaternionA.setFromAxisAngle(Y_AXIS, angle);
+    this.bodies.forEach((body) => {
+      this.placeBody(
+        body,
+        this.tempC.copy(body.position).applyQuaternion(rotation),
+        this.quaternionB.copy(body.orientation).premultiply(rotation),
+        this.tempA.set(0, 0, 0),
+        this.tempB.set(0, 0, 0),
+      );
+    });
   }
 
   select(index: number | null) {
@@ -432,7 +428,6 @@ export class VortexWorld {
     this.bodies.forEach((body) => {
       body.selected = body.index === index;
     });
-    if (this.reduced) this.applyReducedPose();
   }
 
   get selectedProjectIndex() {
