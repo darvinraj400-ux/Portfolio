@@ -8,6 +8,7 @@ import InspectorLight, {
 } from "@/components/three/InspectorLight";
 import StudioEnvironment from "@/components/three/StudioEnvironment";
 import { reportCardHover } from "@/lib/cursor-signal";
+import { reportLandingStep } from "@/lib/landing-ready";
 import { VortexWorld } from "@/lib/vortex-physics";
 import type { Theme } from "@/lib/theme";
 import type { VortexEnvironment } from "@/lib/vortex-config";
@@ -150,21 +151,13 @@ function ContextGuard({ onError }: { onError: () => void }) {
 function ReadySignal({ onReady }: { onReady: () => void }) {
   const sent = useRef(false);
 
-  useEffect(() => {
-    let first = 0;
-    let second = 0;
-    first = requestAnimationFrame(() => {
-      second = requestAnimationFrame(() => {
-        if (sent.current) return;
-        sent.current = true;
-        onReady();
-      });
-    });
-    return () => {
-      cancelAnimationFrame(first);
-      cancelAnimationFrame(second);
-    };
-  }, [onReady]);
+  // Ready once a frame has actually been drawn, so shader compilation and the
+  // first paint finish behind the plate instead of stalling the reveal.
+  useFrame(() => {
+    if (sent.current) return;
+    sent.current = true;
+    requestAnimationFrame(onReady);
+  });
 
   return null;
 }
@@ -447,6 +440,7 @@ export default function VortexCanvas({
         }
         instance = created;
         setWorld(created);
+        reportLandingStep("world");
       })
       .catch((error) => {
         console.error("3D scene failed to start.", error);
@@ -489,6 +483,7 @@ export default function VortexCanvas({
           return;
         }
         setAtlas(next);
+        reportLandingStep("atlas");
       })
       .catch((error) => {
         console.error("Project textures failed to build.", error);
@@ -537,6 +532,7 @@ export default function VortexCanvas({
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = SCENE_EXPOSURE;
         gl.setClearAlpha(0);
+        reportLandingStep("renderer");
       }}
       onPointerMissed={() => {
         if (rest.selectedIndex !== null) rest.onSelect(null);

@@ -22,6 +22,10 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { useSound } from "@/components/audio/SoundProvider";
 import ScrambleText from "@/components/motion/ScrambleText";
 import { SITE } from "@/lib/constants";
+import {
+  reportLandingFallback,
+  reportLandingStep,
+} from "@/lib/landing-ready";
 import { getVortexEnvironment } from "@/lib/vortex-config";
 import { createVortexScrollModel } from "@/lib/vortex-scroll";
 import { loadVortexScene } from "@/lib/vortex-state";
@@ -611,6 +615,24 @@ export default function VortexStage({
   }, [forcedFallback, queryReady]);
 
   useEffect(() => {
+    if (!queryReady || !permanentFallback) return;
+    reportLandingFallback();
+  }, [permanentFallback, queryReady]);
+
+  // Rapier or WebGL can stall without throwing. A scene that has produced no
+  // frame by now is not going to; the static archive is the reliable entry.
+  useEffect(() => {
+    if (!documentVisible || !sceneActive || sceneReady || sceneFailed) return;
+    const timer = window.setTimeout(() => {
+      console.warn(
+        "3D scene produced no frame within 10s; switching to the static archive.",
+      );
+      setSceneFailed(true);
+    }, 10000);
+    return () => window.clearTimeout(timer);
+  }, [documentVisible, sceneActive, sceneFailed, sceneReady]);
+
+  useEffect(() => {
     setSceneReady(false);
   }, [environment.id]);
 
@@ -744,6 +766,7 @@ export default function VortexStage({
 
   const handleSceneReady = useCallback(() => {
     setSceneReady(true);
+    reportLandingStep("frame");
   }, []);
 
   const handleSceneError = useCallback(() => {
@@ -854,7 +877,7 @@ export default function VortexStage({
             aria-hidden="true"
             className={cn(
               "absolute inset-0",
-              showingScene ? "opacity-100" : "opacity-0",
+              sceneActive ? "vortex-scene-layer" : "opacity-0",
             )}
           >
             {sceneActive ? (

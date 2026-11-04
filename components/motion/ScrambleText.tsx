@@ -268,8 +268,8 @@ function observeOnce(element: Element, callback: ViewCallback) {
   };
 }
 
-/** Matches the hero line rise in globals.css: both start inside the intro. */
-const INTRO_REVEAL_MS = 1500;
+/** Matches the plate dissolve in globals.css: copy runs as the overlay leaves. */
+const INTRO_LIFT_MS = 700;
 let introDone = false;
 const introWaiters = new Set<ViewCallback>();
 let introTimer = 0;
@@ -298,13 +298,19 @@ function subscribeIntro(callback: ViewCallback) {
     return () => introWaiters.delete(callback);
   }
   const root = document.documentElement;
-  if (!root.hasAttribute("data-intro")) {
-    introTimer = window.setTimeout(finishIntro, 120);
-    return () => introWaiters.delete(callback);
-  }
-  introTimer = window.setTimeout(finishIntro, INTRO_REVEAL_MS);
+  const arm = (delay: number) => {
+    if (introDone || introTimer) return;
+    introTimer = window.setTimeout(finishIntro, delay);
+  };
+  const state = root.getAttribute("data-intro");
+  if (state === null) arm(120);
+  else if (state === "lift") arm(INTRO_LIFT_MS);
+  // While the entry is still preparing ("run") there is no timer: the reveal
+  // itself decides when the hero copy begins.
   introObserver = new MutationObserver(() => {
-    if (!root.hasAttribute("data-intro")) finishIntro();
+    const value = root.getAttribute("data-intro");
+    if (value === null) finishIntro();
+    else if (value === "lift") arm(INTRO_LIFT_MS);
   });
   introObserver.observe(root, {
     attributes: true,

@@ -491,7 +491,8 @@ html[data-motion="full"] .hero-enter-3 {
   animation-delay: 270ms;
 }
 
-/* Opening calibration plate. Decorative, fixed 2.2s, never blocks the page. */
+/* Opening calibration plate. The gate is data-intro: "run" while the
+   experience prepares, "lift" while it reveals, absent once done. */
 .calibration {
   display: none;
   position: fixed;
@@ -502,15 +503,25 @@ html[data-motion="full"] .hero-enter-3 {
   pointer-events: none;
 }
 
-html[data-motion="full"][data-intro="run"] .calibration {
+html[data-intro="run"] .calibration,
+html[data-intro="lift"] .calibration {
   display: block;
-  animation: calibration-plate 2200ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  pointer-events: auto;
 }
 
-/* Reduced: the branding stays readable, then leaves on a plain opacity fade. */
-html[data-motion="reduced"][data-intro="run"] .calibration {
-  display: block;
-  animation: calibration-plate-soft 1800ms ease forwards;
+/* Full motion: the plate content fades, the plate dissolves, then the scene. */
+html[data-motion="full"][data-intro="lift"] .calibration {
+  animation: calibration-dissolve 1400ms cubic-bezier(0.4, 0, 0.2, 1) 700ms
+    forwards;
+}
+
+html[data-motion="full"][data-intro="lift"] .calibration-plate {
+  animation: calibration-content-out 420ms ease forwards;
+}
+
+/* Reduced: no curtain, no sweep, just a plain opacity fade. */
+html[data-motion="reduced"][data-intro="lift"] .calibration {
+  animation: calibration-soft-out 480ms ease forwards;
 }
 
 html[data-motion="reduced"] .calibration-line {
@@ -520,10 +531,6 @@ html[data-motion="reduced"] .calibration-line {
 html[data-motion="reduced"] .calibration-meta,
 html[data-motion="reduced"] .calibration-ticks {
   opacity: 1;
-}
-
-html[data-motion="reduced"] .calibration-scale-line {
-  transform: scaleX(1);
 }
 
 .calibration[data-dismissed="true"] {
@@ -541,22 +548,29 @@ html[data-motion="reduced"] .calibration-scale-line {
   inset: 0;
 }
 
-@keyframes calibration-plate {
-  0%,
-  81% {
-    clip-path: inset(0 0 0 0);
+@keyframes calibration-dissolve {
+  from {
+    opacity: 1;
   }
-  100% {
-    clip-path: inset(100% 0 0 0);
+  to {
+    opacity: 0;
   }
 }
 
-@keyframes calibration-plate-soft {
-  0%,
-  72% {
+@keyframes calibration-content-out {
+  from {
     opacity: 1;
   }
-  100% {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes calibration-soft-out {
+  from {
+    opacity: 1;
+  }
+  to {
     opacity: 0;
   }
 }
@@ -595,30 +609,95 @@ html[data-motion="full"][data-intro="run"] .calibration-ticks {
   animation: calibration-fade 300ms ease 620ms forwards;
 }
 
-.calibration-scale-line {
-  transform: scaleX(0);
-  transform-origin: left;
-}
-
-html[data-motion="full"][data-intro="run"] .calibration-scale-line {
-  animation: calibration-measure 1100ms cubic-bezier(0.22, 1, 0.36, 1) 620ms
-    forwards;
-}
-
 @keyframes calibration-fade {
   to {
     opacity: 1;
   }
 }
 
-@keyframes calibration-measure {
-  to {
-    transform: scaleX(1);
+/* Real completed steps, never a fabricated percentage. The glint below only
+   indicates that work is still in progress. */
+.calibration-progress {
+  transform: scaleX(var(--intro-progress, 0));
+  transform-origin: left;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.calibration-glint {
+  display: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+}
+
+html[data-motion="full"][data-intro="run"] .calibration-glint {
+  display: block;
+  animation: calibration-glint 1600ms linear infinite;
+}
+
+html[data-motion="reduced"] .calibration-glint {
+  display: none;
+}
+
+@keyframes calibration-glint {
+  from {
+    transform: translate3d(-100%, 0, 0);
   }
+  to {
+    transform: translate3d(400%, 0, 0);
+  }
+}
+
+/* A restrained metallic reflection, once, as the plate begins to leave. */
+.calibration-sweep {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.05) 46%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.05) 54%,
+    transparent 62%
+  );
+  transform: translate3d(-70%, 0, 0);
+}
+
+html[data-motion="full"][data-intro="lift"] .calibration-sweep {
+  animation: calibration-sweep 900ms cubic-bezier(0.3, 0, 0.2, 1) 220ms both;
+}
+
+@keyframes calibration-sweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-70%, 0, 0);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(70%, 0, 0);
+  }
+}
+
+html[data-motion="reduced"] .calibration-sweep {
+  display: none;
 }
 
 .calibration-skip {
   pointer-events: auto;
+}
+
+/* The scene prepares behind the opaque plate so its first present never
+   stalls the reveal. The plate itself is what fades away. */
+.vortex-scene-layer {
+  opacity: 1;
 }
 
 /* Survey reticle: a fixed desktop cursor. Native cursor only returns where
@@ -950,16 +1029,16 @@ html[data-motion="reduced"][data-cursor="instrument"] * {
   }
 }
 
-html[data-motion="full"][data-intro="run"] .hero-plate .plate-line {
-  animation: plate-rise 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
+html[data-motion="full"][data-intro="lift"] .hero-plate .plate-line {
+  animation: plate-rise 660ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms both;
 }
 
-html[data-motion="full"][data-intro="run"] .hero-plate .plate-line-2 {
-  animation-delay: 1590ms;
+html[data-motion="full"][data-intro="lift"] .hero-plate .plate-line-2 {
+  animation-delay: 1390ms;
 }
 
-html[data-motion="full"][data-intro="run"] .hero-plate .plate-follow {
-  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 1700ms both;
+html[data-motion="full"][data-intro="lift"] .hero-plate .plate-follow {
+  animation: plate-fade-up 360ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
 }
 
 html[data-motion="full"] .plate-title-inner {
@@ -1026,7 +1105,7 @@ html[data-motion="full"] .archive-count {
 }
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-  html[data-motion="full"][data-intro="run"] .hero-plate .plate-sweep {
+  html[data-motion="full"][data-intro="lift"] .hero-plate .plate-sweep {
     background-image:
       linear-gradient(
         180deg,
@@ -1049,7 +1128,7 @@ html[data-motion="full"] .archive-count {
     background-position:
       0 0,
       130% 0;
-    animation: plate-sweep 660ms cubic-bezier(0.22, 1, 0.36, 1) 1500ms both;
+    animation: plate-sweep 660ms cubic-bezier(0.22, 1, 0.36, 1) 1300ms both;
   }
 }
 
@@ -1252,7 +1331,7 @@ html[data-theme="light"] .calibration {
 }
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-  html[data-motion="full"][data-theme="light"][data-intro="run"]
+  html[data-motion="full"][data-theme="light"][data-intro="lift"]
     .hero-plate
     .plate-sweep {
     background-image:
