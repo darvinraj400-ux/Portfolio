@@ -758,8 +758,8 @@ const FULL_DESKTOP: VortexEnvironment = {
     linearDamping: 0.015,
   },
   physics: {
-    fixedStep: 1 / 120,
-    maxSubsteps: 5,
+    fixedStep: 1 / 60,
+    maxSubsteps: 2,
     maxFrameDelta: 0.05,
     maxSpeed: 7.5,
     maxAngularSpeed: 7,
@@ -891,8 +891,8 @@ const FULL_MOBILE: VortexEnvironment = {
     linearDamping: 0.02,
   },
   physics: {
-    fixedStep: 1 / 90,
-    maxSubsteps: 4,
+    fixedStep: 1 / 60,
+    maxSubsteps: 2,
     maxFrameDelta: 0.05,
     maxSpeed: 6,
     maxAngularSpeed: 6,

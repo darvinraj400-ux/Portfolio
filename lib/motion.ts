@@ -1,42 +1,15 @@
 export const MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 export const MOTION_STORAGE_KEY = "darvin-motion-v1";
 
-export type MotionPreference = "system" | "reduced" | "full";
 export type MotionMode = "reduced" | "full";
+export type MotionPreference = "system" | "full";
 
 export type MotionSnapshot = {
   preference: MotionPreference;
-  systemReduced: boolean;
   mode: MotionMode;
 };
 
-const SERVER_SNAPSHOT: MotionSnapshot = {
-  preference: "system",
-  systemReduced: false,
-  mode: "full",
-};
-
-function isMotionPreference(value: unknown): value is MotionPreference {
-  return value === "system" || value === "reduced" || value === "full";
-}
-
-function resolveMode(
-  preference: MotionPreference,
-  systemReduced: boolean,
-): MotionMode {
-  if (preference === "full") return "full";
-  if (preference === "reduced") return "reduced";
-  return systemReduced ? "reduced" : "full";
-}
-
-function readPreference(): MotionPreference {
-  try {
-    const stored = window.localStorage.getItem(MOTION_STORAGE_KEY);
-    return isMotionPreference(stored) ? stored : "system";
-  } catch {
-    return "system";
-  }
-}
+const SERVER_SNAPSHOT: MotionSnapshot = { preference: "system", mode: "full" };
 
 function readSystemReduced(): boolean {
   try {
@@ -46,10 +19,20 @@ function readSystemReduced(): boolean {
   }
 }
 
+function readPreference(): MotionPreference {
+  try {
+    return window.localStorage.getItem(MOTION_STORAGE_KEY) === "full"
+      ? "full"
+      : "system";
+  } catch {
+    return "system";
+  }
+}
+
 function computeSnapshot(): MotionSnapshot {
   const preference = readPreference();
-  const systemReduced = readSystemReduced();
-  return { preference, systemReduced, mode: resolveMode(preference, systemReduced) };
+  const reduced = preference !== "full" && readSystemReduced();
+  return { preference, mode: reduced ? "reduced" : "full" };
 }
 
 let snapshot: MotionSnapshot | null = null;
@@ -60,9 +43,6 @@ function syncDocument(current: MotionSnapshot) {
   if (typeof document === "undefined") return;
   const dataset = document.documentElement.dataset;
   if (dataset.motion !== current.mode) dataset.motion = current.mode;
-  if (dataset.motionPreference !== current.preference) {
-    dataset.motionPreference = current.preference;
-  }
 }
 
 function notify() {
@@ -74,18 +54,7 @@ function refresh() {
   const previous = snapshot;
   snapshot = next;
   syncDocument(next);
-  if (
-    !previous ||
-    previous.preference !== next.preference ||
-    previous.systemReduced !== next.systemReduced
-  ) {
-    notify();
-  }
-}
-
-function onStorage(event: StorageEvent) {
-  if (event.key !== null && event.key !== MOTION_STORAGE_KEY) return;
-  refresh();
+  if (!previous || previous.mode !== next.mode) notify();
 }
 
 function startListening() {
@@ -93,13 +62,32 @@ function startListening() {
     mediaQuery = window.matchMedia(MOTION_QUERY);
     mediaQuery.addEventListener("change", refresh);
   }
-  window.addEventListener("storage", onStorage);
+  window.addEventListener("storage", onStorageChange);
 }
 
 function stopListening() {
   mediaQuery?.removeEventListener("change", refresh);
   mediaQuery = null;
-  window.removeEventListener("storage", onStorage);
+  window.removeEventListener("storage", onStorageChange);
+}
+
+function onStorageChange(event: StorageEvent) {
+  if (event.key !== null && event.key !== MOTION_STORAGE_KEY) return;
+  refresh();
+}
+
+export function setMotionPreference(preference: MotionPreference): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (preference === "full") {
+      window.localStorage.setItem(MOTION_STORAGE_KEY, "full");
+    } else {
+      window.localStorage.removeItem(MOTION_STORAGE_KEY);
+    }
+  } catch {
+    // Storage can be blocked; the in-memory snapshot still applies.
+  }
+  refresh();
 }
 
 function ensureSnapshot(): MotionSnapshot {
@@ -127,32 +115,7 @@ export function subscribeMotionPreference(callback: () => void): () => void {
   };
 }
 
-export function setMotionPreference(preference: MotionPreference): void {
-  if (typeof window === "undefined") return;
-  const systemReduced = readSystemReduced();
-  const previous = ensureSnapshot();
-  if (
-    previous.preference === preference &&
-    previous.systemReduced === systemReduced
-  ) {
-    return;
-  }
-  const next: MotionSnapshot = {
-    preference,
-    systemReduced,
-    mode: resolveMode(preference, systemReduced),
-  };
-  snapshot = next;
-  try {
-    window.localStorage.setItem(MOTION_STORAGE_KEY, preference);
-  } catch {
-    // Storage unavailable: the choice still applies for this visit.
-  }
-  syncDocument(next);
-  notify();
-}
-
-/** Applies the stored effective mode to the document after hydration. */
+/** Applies the system mode to the document after hydration. */
 export function syncMotionDocument(): void {
   if (typeof window === "undefined") return;
   syncDocument(ensureSnapshot());
@@ -164,23 +127,15 @@ export function isMotionReduced(): boolean {
 }
 
 /**
- * Runs before paint so the first frame already carries the effective mode.
- * A missing or unreadable store falls back to the system setting.
+ * Runs before paint so the first frame already carries the system mode or the
+ * stored full-motion override.
  */
 export const MOTION_BOOTSTRAP_SCRIPT = `(function(){try{
-var stored=null;
-try{stored=window.localStorage.getItem(${JSON.stringify(MOTION_STORAGE_KEY)})}catch(e){}
-var preference=stored==="system"||stored==="reduced"||stored==="full"?stored:"system";
+var full=false;
+try{full=localStorage.getItem(${JSON.stringify(MOTION_STORAGE_KEY)})==="full"}catch(e){}
 var reduced=false;
-try{reduced=!!(window.matchMedia&&window.matchMedia(${JSON.stringify(MOTION_QUERY)}).matches)}catch(e){}
-var mode=preference==="full"?"full":preference==="reduced"?"reduced":(reduced?"reduced":"full");
-var root=document.documentElement;
-root.setAttribute("data-motion",mode);
-root.setAttribute("data-motion-preference",preference);
+if(!full){try{reduced=!!(window.matchMedia&&window.matchMedia(${JSON.stringify(MOTION_QUERY)}).matches)}catch(e){}}
+document.documentElement.setAttribute("data-motion",reduced?"reduced":"full");
 }catch(e){
-try{
-var fallback=document.documentElement;
-fallback.setAttribute("data-motion","full");
-fallback.setAttribute("data-motion-preference","system");
-}catch(e2){}
+try{document.documentElement.setAttribute("data-motion","full")}catch(e2){}
 }})();`;

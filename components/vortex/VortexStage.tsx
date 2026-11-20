@@ -27,7 +27,6 @@ import {
   reportLandingStep,
 } from "@/lib/landing-ready";
 import { getVortexEnvironment } from "@/lib/vortex-config";
-import { createVortexScrollModel } from "@/lib/vortex-scroll";
 import { loadVortexScene } from "@/lib/vortex-state";
 import type {
   VortexDebugHandle,
@@ -458,6 +457,9 @@ export default function VortexStage({
   const [documentVisible, setDocumentVisible] = useState(true);
 
   const stageRef = useRef<HTMLDivElement>(null);
+  const runwayRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const heroProgress = useRef(0);
   const panelRef = useRef<HTMLElement>(null);
   const panelTimerRef = useRef<number | null>(null);
   const indexToggleRef = useRef<HTMLButtonElement>(null);
@@ -487,8 +489,6 @@ export default function VortexStage({
   // The contact sheet is only the boot placeholder; permanent fallback uses
   // the readable archive below the hero.
   const showBootFallback = !showingScene && !permanentFallback;
-  const activeRef = useRef(active);
-  activeRef.current = active;
 
   const selectedProject =
     selectedIndex !== null ? projects[selectedIndex] ?? null : null;
@@ -669,79 +669,8 @@ export default function VortexStage({
   }, []);
 
   useEffect(() => {
-    if (reduced) {
-      inputRef.current.pointerActive = false;
-      return;
-    }
-
-    const model = createVortexScrollModel(
-      inputRef.current,
-      {
-        gain: environment.wind.scrollGain,
-        teleportPx: Math.max(1200, window.innerHeight * 1.5),
-      },
-      window.scrollY,
-      performance.now(),
-    );
-
-    const nestedScrollerEats = (target: EventTarget | null, deltaY: number) => {
-      if (!(target instanceof Element)) return false;
-      let node: Element | null = target;
-      while (
-        node &&
-        node !== document.body &&
-        node !== document.documentElement
-      ) {
-        const overflow = getComputedStyle(node).overflowY;
-        if (overflow === "auto" || overflow === "scroll") {
-          const range = node.scrollHeight - node.clientHeight;
-          if (range > 1) {
-            const canMove =
-              deltaY < 0 ? node.scrollTop > 0 : node.scrollTop < range - 1;
-            if (canMove) return true;
-          }
-        }
-        node = node.parentElement;
-      }
-      return false;
-    };
-
-    const handleScroll = () => {
-      model.scroll(window.scrollY, performance.now(), activeRef.current);
-    };
-
-    const handleWheel = (event: globalThis.WheelEvent) => {
-      if (event.ctrlKey || event.metaKey) {
-        model.suppress(performance.now());
-        return;
-      }
-      if (!activeRef.current) return;
-      const unit =
-        event.deltaMode === 1
-          ? 16
-          : event.deltaMode === 2
-            ? window.innerHeight
-            : 1;
-      const deltaY = event.deltaY * unit;
-      if (Math.abs(deltaY) < 0.5) return;
-      if (nestedScrollerEats(event.target, deltaY)) return;
-
-      const root = document.documentElement;
-      const atTop = window.scrollY <= 0;
-      const atBottom =
-        window.scrollY + window.innerHeight >= root.scrollHeight - 1;
-      if ((deltaY < 0 && atTop) || (deltaY > 0 && atBottom)) return;
-
-      model.wheel(deltaY, performance.now());
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, [environment, reduced]);
+    if (reduced) inputRef.current.pointerActive = false;
+  }, [reduced]);
 
   useEffect(() => {
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
@@ -815,6 +744,52 @@ export default function VortexStage({
     [],
   );
 
+  // Scroll handoff: the tall runway becomes an exit animation. The copy lifts
+  // and fades while the camera push (CameraRig) follows this progress ref.
+  // 64px matches the sticky top-16 offset.
+  useEffect(() => {
+    const runway = runwayRef.current;
+    const copy = copyRef.current;
+    if (!home || reduced || permanentFallback || !runway || !copy) return;
+    let frame = 0;
+
+    const apply = () => {
+      frame = 0;
+      const rect = runway.getBoundingClientRect();
+      const stage = stageRef.current;
+      const stageHeight = stage
+        ? stage.getBoundingClientRect().height
+        : window.innerHeight - 64;
+      const travel = Math.max(rect.height - stageHeight, 1);
+      const raw = Math.min(1, Math.max(0, (64 - rect.top) / travel));
+      heroProgress.current = raw;
+      const p = Math.min(raw * 1.35, 1);
+      copy.style.opacity = raw === 0 ? "" : String(1 - p);
+      copy.style.transform =
+        raw === 0 ? "" : `translate3d(0, ${(-p * 36).toFixed(1)}px, 0)`;
+      // Fully faded copy must not keep invisible CTAs clickable or tabbable.
+      copy.style.visibility = p >= 1 ? "hidden" : "";
+    };
+
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(apply);
+    };
+
+    apply();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      heroProgress.current = 0;
+      copy.style.opacity = "";
+      copy.style.transform = "";
+      copy.style.visibility = "";
+    };
+  }, [home, permanentFallback, reduced]);
+
   const statusLabel = !queryReady
     ? "Preparing"
     : !sceneActive
@@ -836,6 +811,7 @@ export default function VortexStage({
       className="relative isolate"
     >
       <div
+        ref={runwayRef}
         className={cn(
           "relative",
           permanentFallback
@@ -890,6 +866,7 @@ export default function VortexStage({
                   selectedIndex={selectedIndex}
                   reduced={reduced}
                   active={active}
+                  heroProgress={heroProgress}
                   input={inputRef.current}
                   onSelect={handleSelect}
                   onReady={handleSceneReady}
@@ -930,6 +907,7 @@ export default function VortexStage({
 
           {home ? (
             <div
+              ref={copyRef}
               className={cn(
                 "hero-plate pointer-events-none z-20 bg-gradient-to-b from-background via-background/88 to-transparent pb-14 sm:pb-20",
                 permanentFallback
@@ -1012,7 +990,7 @@ export default function VortexStage({
                         ? "WebGL is unavailable. Every project is listed in the static archive below and in the project index."
                         : reduced
                           ? "Reduced motion is on. Drag the field to look around, or choose a project from the index to inspect it."
-                          : "Scroll to move through the field, or choose a project from the index to inspect it."}
+                          : "Hover to disturb the field, or choose a project from the index to inspect it."}
                     </p>
                     <div className="pointer-events-auto mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
                       <Link
@@ -1113,8 +1091,8 @@ export default function VortexStage({
                       : reduced
                         ? "Reduced motion is on. Drag to look around; use the index to inspect each card."
                         : full
-                          ? "Scroll to stir the air. Select a card or open the project index. Escape clears."
-                          : "Scroll to stir the air. Select a card to bring it forward. Escape clears."}
+                          ? "Select a card or open the project index. Escape clears."
+                          : "Select a card to bring it forward. Escape clears."}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">

@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -15,24 +16,19 @@ import {
   setMotionPreference,
   subscribeMotionPreference,
   syncMotionDocument,
-  type MotionMode,
   type MotionPreference,
 } from "@/lib/motion";
 
 type MotionPreferenceContextValue = {
-  preference: MotionPreference;
-  mode: MotionMode;
   reduced: boolean;
-  systemReduced: boolean;
+  preference: MotionPreference;
   setPreference: (preference: MotionPreference) => void;
 };
 
 const MotionPreferenceContext = createContext<MotionPreferenceContextValue>({
-  preference: "system",
-  mode: "full",
   reduced: false,
-  systemReduced: false,
-  setPreference: () => undefined,
+  preference: "system",
+  setPreference: () => {},
 });
 
 export function MotionPreferenceProvider({
@@ -45,27 +41,24 @@ export function MotionPreferenceProvider({
     getMotionSnapshot,
     getServerMotionSnapshot,
   );
+  const reduced = snapshot.mode === "reduced";
 
   useEffect(() => {
     syncMotionDocument();
   }, []);
 
-  const value = useMemo<MotionPreferenceContextValue>(
-    () => ({
-      preference: snapshot.preference,
-      mode: snapshot.mode,
-      reduced: snapshot.mode === "reduced",
-      systemReduced: snapshot.systemReduced,
-      setPreference: setMotionPreference,
-    }),
-    [snapshot],
+  const setPreference = useCallback((next: MotionPreference) => {
+    setMotionPreference(next);
+  }, []);
+
+  const value = useMemo(
+    () => ({ reduced, preference: snapshot.preference, setPreference }),
+    [reduced, setPreference, snapshot.preference],
   );
 
   return (
     <MotionPreferenceContext.Provider value={value}>
-      <MotionConfig
-        reducedMotion={snapshot.mode === "reduced" ? "always" : "never"}
-      >
+      <MotionConfig reducedMotion={reduced ? "always" : "never"}>
         {children}
       </MotionConfig>
     </MotionPreferenceContext.Provider>

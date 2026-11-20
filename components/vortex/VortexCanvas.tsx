@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import InspectorLight, {
   SCENE_EXPOSURE,
@@ -39,6 +39,7 @@ type VortexCanvasProps = {
   selectedIndex: number | null;
   reduced: boolean;
   active: boolean;
+  heroProgress: RefObject<number>;
   input: VortexInput;
   onSelect: (index: number | null) => void;
   onReady: () => void;
@@ -46,17 +47,24 @@ type VortexCanvasProps = {
   onDebugHandle: (handle: VortexDebugHandle | null) => void;
 };
 
-type WorldProps = Omit<VortexCanvasProps, "active" | "onDebugHandle"> & {
+type WorldProps = Omit<VortexCanvasProps, "onDebugHandle"> & {
   world: VortexWorld;
   atlas: VortexAtlas;
   sheen: THREE.CanvasTexture;
   onDebugHandle: (handle: VortexDebugHandle | null) => void;
 };
 
-function CameraRig({ environment }: { environment: VortexEnvironment }) {
+function CameraRig({
+  environment,
+  heroProgress,
+}: {
+  environment: VortexEnvironment;
+  heroProgress: RefObject<number>;
+}) {
   const camera = useThree((state) => state.camera);
   const size = useThree((state) => state.size);
   const invalidate = useThree((state) => state.invalidate);
+  const baseZ = useRef(0);
 
   useEffect(() => {
     const perspective = camera as THREE.PerspectiveCamera;
@@ -71,11 +79,9 @@ function CameraRig({ environment }: { environment: VortexEnvironment }) {
     perspective.aspect = aspect;
     perspective.near = config.near;
     perspective.far = config.far;
-    perspective.position.set(
-      config.position[0],
-      config.position[1],
-      config.position[2] * compensation,
-    );
+    const z = config.position[2] * compensation;
+    baseZ.current = z;
+    perspective.position.set(config.position[0], config.position[1], z);
     perspective.lookAt(
       config.target[0],
       config.target[1],
@@ -85,6 +91,31 @@ function CameraRig({ environment }: { environment: VortexEnvironment }) {
     perspective.updateMatrixWorld();
     invalidate();
   }, [camera, environment, invalidate, size.height, size.width]);
+
+  // The homepage scroll handoff eases the camera 6% into the field. The damp
+  // keeps invalidating until settled so it also unwinds on the way back up,
+  // even when the frame pump is off (reduced motion).
+  useFrame((_, delta) => {
+    const perspective = camera as THREE.PerspectiveCamera;
+    const target = baseZ.current * (1 - 0.06 * heroProgress.current);
+    const z = THREE.MathUtils.damp(
+      perspective.position.z,
+      target,
+      6,
+      Math.min(delta, 0.1),
+    );
+    if (Math.abs(z - perspective.position.z) < 0.0004) {
+      if (perspective.position.z !== target) {
+        perspective.position.z = target;
+        perspective.updateMatrixWorld();
+        invalidate();
+      }
+      return;
+    }
+    perspective.position.z = z;
+    perspective.updateMatrixWorld();
+    invalidate();
+  });
 
   return null;
 }
@@ -149,15 +180,41 @@ function ContextGuard({ onError }: { onError: () => void }) {
 }
 
 function ReadySignal({ onReady }: { onReady: () => void }) {
+  const gl = useThree((state) => state.gl);
+  const scene = useThree((state) => state.scene);
+  const camera = useThree((state) => state.camera);
   const sent = useRef(false);
 
-  // Ready once a frame has actually been drawn, so shader compilation and the
-  // first paint finish behind the plate instead of stalling the reveal.
+  // Compile the card programs on the first tick, then wait one frame so the
+  // first presented frame is already warm and the reveal has nothing to stall on.
   useFrame(() => {
     if (sent.current) return;
     sent.current = true;
+    gl.compile(scene, camera);
     requestAnimationFrame(onReady);
   });
+
+  return null;
+}
+
+function FramePump({ enabled }: { enabled: boolean }) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let frame = 0;
+    let last = 0;
+    const tick = (now: number) => {
+      frame = requestAnimationFrame(tick);
+      // Skip alternate frames on panels faster than 100Hz; 60 and 90Hz keep
+      // their native cadence instead of dropping to a half-rate stutter.
+      if (now - last < 10) return;
+      last = now;
+      invalidate();
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [enabled, invalidate]);
 
   return null;
 }
@@ -168,6 +225,8 @@ function VortexWorldView({
   theme,
   selectedIndex,
   reduced,
+  active,
+  heroProgress,
   input,
   onSelect,
   onReady,
@@ -342,9 +401,10 @@ function VortexWorldView({
   return (
     <>
       <StudioEnvironment theme={theme} />
-      <CameraRig environment={environment} />
+      <CameraRig environment={environment} heroProgress={heroProgress} />
       <ContextGuard onError={onError} />
       <ReadySignal onReady={onReady} />
+      <FramePump enabled={active && !reduced} />
 
       <ambientLight intensity={light ? 0.5 : 0.22} />
       <directionalLight
@@ -356,11 +416,6 @@ function VortexWorldView({
         position={[7, 1.5, 6]}
         intensity={light ? 0.75 : 1.05}
         color="#e7ebef"
-      />
-      <directionalLight
-        position={[0, 4, -9]}
-        intensity={light ? 0.5 : 0.62}
-        color="#dfe4e8"
       />
       <pointLight
         ref={backlight}
@@ -510,7 +565,7 @@ export default function VortexCanvas({
 
   if (!atlas || !sheen || !world) return null;
 
-  const frameloop = !active ? "never" : reduced ? "demand" : "always";
+  const frameloop = !active ? "never" : "demand";
 
   return (
     <Canvas
@@ -541,6 +596,7 @@ export default function VortexCanvas({
     >
       <VortexWorldView
         {...rest}
+        active={active}
         projects={projects}
         environment={environment}
         reduced={reduced}

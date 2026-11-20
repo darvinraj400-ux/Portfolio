@@ -20,11 +20,11 @@ export type VortexInventoryEntry = {
 };
 
 /**
- * Mutable values written by the page (scroll, pointer) and read inside the
- * fixed-step simulation. Kept outside React so wind input never re-renders.
+ * Mutable values written by the page (pointer) and read inside the fixed-step
+ * simulation. Kept outside React so input never re-renders.
  */
 export type VortexInput = {
-  /** Wind energy added by recent scrolling, consumed by the simulation. */
+  /** Debug-only gust energy consumed by the simulation. */
   scrollImpulse: number;
   scrollDirection: 1 | -1;
   pointerX: number;

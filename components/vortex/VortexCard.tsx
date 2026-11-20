@@ -58,6 +58,8 @@ export default function VortexCard({
     selectedAtMount !== null && selectedAtMount !== body.index ? 1 : 0,
   );
   const depth = useRef(clamp((body.position.z + 3) / 7, 0, 1));
+  const sheenFront = useRef<THREE.Mesh>(null);
+  const sheenBack = useRef<THREE.Mesh>(null);
 
   const resources = useMemo(() => {
     const scale =
@@ -86,23 +88,20 @@ export default function VortexCard({
     const sheenGeometry = faceGeometry.clone();
     faceGeometry.dispose();
 
-    const rimMaterial = new THREE.MeshPhysicalMaterial({
+    const rimMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color("#b9b9bc"),
       metalness: 1,
       roughness: 0.28,
-      envMapIntensity: 1.1,
+      envMapIntensity: 0.85,
       emissive: new THREE.Color("#ffffff"),
       emissiveIntensity: 0.02,
     });
-    const printMaterial = new THREE.MeshPhysicalMaterial({
+    const printMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color("#ffffff"),
       map: atlas.texture,
       metalness: 0.06,
       roughness: 0.58,
-      specularIntensity: 0.35,
-      clearcoat: 0.22,
-      clearcoatRoughness: 0.42,
-      envMapIntensity: 0.55,
+      envMapIntensity: 0.4,
       emissive: new THREE.Color("#ffffff"),
       emissiveMap: atlas.texture,
       emissiveIntensity: 0.36,
@@ -239,10 +238,16 @@ export default function VortexCard({
       clamp(near * (1 - dim.current * 0.52), 0.28, 1),
     );
 
-    resources.sheenMaterial.opacity =
-      (0.14 + hover.current * 0.06 + focus.current * 0.08) *
+    const sheen =
+      (hover.current * 0.1 + focus.current * 0.16) *
       (0.55 + depth.current * 0.45) *
       (1 - dim.current * 0.45);
+    resources.sheenMaterial.opacity = sheen;
+    // The sweep only draws on the card under the eye; at rest it is skipped
+    // entirely, which keeps 64 additive layers off the fill rate.
+    const sheenOn = sheen > 0.004;
+    if (sheenFront.current) sheenFront.current.visible = sheenOn;
+    if (sheenBack.current) sheenBack.current.visible = sheenOn;
   });
 
   const setHover = (hovered: boolean) => {
@@ -296,18 +301,22 @@ export default function VortexCard({
         raycast={() => {}}
       />
       <mesh
+        ref={sheenFront}
         geometry={resources.sheenGeometry}
         material={resources.sheenMaterial}
         position={[0, 0, resources.sheenZ]}
         renderOrder={3}
+        visible={false}
         raycast={() => {}}
       />
       <mesh
+        ref={sheenBack}
         geometry={resources.sheenGeometry}
         material={resources.sheenMaterial}
         position={[0, 0, -resources.sheenZ]}
         rotation={[0, Math.PI, 0]}
         renderOrder={3}
+        visible={false}
         raycast={() => {}}
       />
     </group>
